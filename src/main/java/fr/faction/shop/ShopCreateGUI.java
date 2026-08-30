@@ -4,77 +4,89 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
 /**
- * GUI de création d'annonce pour le shop global.
+ * GUI de création d'annonce Shop — version claire et simple.
  *
- * Layout (6 rangées = 54 slots) :
+ * Layout 4 rangées (36 slots) :
  *
- *  ┌─────────────────────────────────────────────────────────────────────────────┐
- *  │  VENDRE                                                         CONTRE      │
- *  │  [ITEM]  ← slot 20        Quantité: [−][+]        [PRIX]  ← slot 24        │
- *  │  ← dépose l'item ici                               ← dépose le prix ici     │
- *  │                                                                             │
- *  │  Qté item : [−−][−][qty][+][++]    Qté prix : [−−][−][qty][+][++]          │
- *  │                                                                             │
- *  │  MODE : [💰 Monnaie]  [🔄 Troc]         [✔ CONFIRMER]  [✗ Annuler]        │
- *  └─────────────────────────────────────────────────────────────────────────────┘
+ *  Rangée 0 : [instructions] [ITEM] [•] [CONTRE] [PRIX/MONNAIE] [•] [aperçu]
+ *  Rangée 1 : [◀ qté item] [qté item affiché] [▶ qté item] [SEP] [◀ qté prix] [qté prix affiché] [▶ qté prix]
+ *  Rangée 2 : [mode MONNAIE] [fer|or|diamant|emeraude] [mode TROC]
+ *  Rangée 3 : [✔ CONFIRMER] [✗ ANNULER]
  *
- * Slots fixes :
- *   2  → label "VENDRE"
- *   6  → label "CONTRE"
- *   11 → slot de dépôt item en vente  (interactif)
- *   15 → slot de dépôt item prix      (interactif)
- *   28,29 → qty item −− −
- *   30    → affichage qté item
- *   31,32 → qty item + ++
- *   33,34 → qty prix −− −
- *   35    → affichage qté prix
- *   36,37 → qty prix + ++
- *   38 → mode MONNAIE
- *   40 → mode TROC
- *   42 → ✔ Confirmer
- *   44 → ✗ Annuler
+ * Simplifié vs ancienne version :
+ *  - Slot ITEM (slot 10) : le joueur shift-clique depuis son inventaire OU dépose l'item avec le curseur
+ *  - Slot PRIX (slot 14) : pareil
+ *  - Boutons −10 / −1 / +1 / +10 directs
+ *  - Preview en slot 16 : résumé de l'annonce
+ *  - Instructions claires en slot 4
  */
 public class ShopCreateGUI implements Listener {
 
-    private static final String TITLE = "§8§l[§6§lNouvelle Annonce§8§l] §7Shop Global";
+    private static final String TITLE = "§8§l[ §6§lNouvelle Annonce §8§l]";
 
-    // ─── État par joueur ─────────────────────────────────────────────────────────
-    private static class CreateState {
-        ItemStack sellItem;   // item mis en vente (type seulement, quantité gérée séparément)
+    // Layout slots
+    private static final int SL_INSTRUCTIONS = 4;
+    private static final int SL_ITEM         = 10; // zone dépôt item en vente
+    private static final int SL_SEPARATOR    = 13;
+    private static final int SL_PRICE_ZONE   = 16; // zone dépôt item prix (mode troc) / monnaie
+    private static final int SL_PREVIEW      = 22;
+    // Qty item
+    private static final int SL_ITEM_MM  = 19, SL_ITEM_M = 20, SL_ITEM_QTY = 21, SL_ITEM_P = 22, SL_ITEM_PP = 23;
+    // Qty prix
+    private static final int SL_PRICE_MM = 25, SL_PRICE_M = 26, SL_PRICE_QTY = 27, SL_PRICE_P = 28, SL_PRICE_PP = 29;
+    // Modes
+    private static final int SL_MODE_CURR   = 30;
+    private static final int SL_CURR_IRON   = 31, SL_CURR_GOLD = 32, SL_CURR_DIAMOND = 33, SL_CURR_EMERALD = 34;
+    private static final int SL_MODE_BARTER = 35;
+    // Actions
+    private static final int SL_CONFIRM = 27; // re-utilisé dans la 4e rangée
+    private static final int SL_CANCEL  = 35; // re-utilisé dans la 4e rangée
+
+    // On va utiliser un layout à 5 rangées (45 slots) pour avoir de l'espace
+    // Rangée 0 (0-8)    : header/info
+    // Rangée 1 (9-17)   : item à vendre (slot 11) | sep (13) | item prix (slot 15)
+    // Rangée 2 (18-26)  : qté item | sep | qté prix
+    // Rangée 3 (27-35)  : modes de paiement (monnaie: fer/or/dia/eme, troc)
+    // Rangée 4 (36-44)  : confirmer | annuler
+
+    private final int SLOT_ITEM   = 11;
+    private final int SLOT_PRICE  = 15;
+    private final int SLOT_ITEM_M10 = 18, SLOT_ITEM_M1 = 19, SLOT_ITEM_QTY_D = 20, SLOT_ITEM_P1 = 21, SLOT_ITEM_P10 = 22;
+    private final int SLOT_PRICE_M10 = 24, SLOT_PRICE_M1 = 25, SLOT_PRICE_QTY_D = 26, SLOT_PRICE_P1 = 27, SLOT_PRICE_P10 = 28;
+    private final int SLOT_CURR_IRON    = 29;
+    private final int SLOT_CURR_GOLD    = 30;
+    private final int SLOT_CURR_DIAMOND = 31;
+    private final int SLOT_CURR_EMERALD = 32;
+    private final int SLOT_MODE_BARTER  = 33;
+    private final int SLOT_CONFIRM = 38;
+    private final int SLOT_CANCEL  = 40;
+
+    private static class State {
+        ItemStack sellItem;
         int sellQty = 1;
-        ItemStack priceItem;  // item prix (type seulement, quantité gérée séparément)
+        ItemStack priceItem; // null si mode monnaie
         int priceQty = 1;
         ShopListing.PriceMode mode = ShopListing.PriceMode.CURRENCY;
         ShopListing.Currency currency = ShopListing.Currency.EMERALD;
     }
 
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
     private final ShopManager shopManager;
-    private final Map<UUID, CreateState> states = new HashMap<>();
+    private final Map<UUID, State> states = new HashMap<>();
+    // Inventaire ouvert par UUID (pour pouvoir le modifier sans le fermer/rouvrir)
+    private final Map<UUID, Inventory> openInvs = new HashMap<>();
 
-    // Slots spéciaux (annoncés dans le titre de la section)
-    private static final int SLOT_SELL_ITEM  = 11;
-    private static final int SLOT_PRICE_ITEM = 15;
-
-    // Contrôles quantité item vendu
-    private static final int S_SELL_MM = 28, S_SELL_M = 29, S_SELL_DIS = 30, S_SELL_P = 31, S_SELL_PP = 32;
-    // Contrôles quantité prix
-    private static final int S_PRICE_MM = 33, S_PRICE_M = 34, S_PRICE_DIS = 35, S_PRICE_P = 36, S_PRICE_PP = 37;
-    // Modes & actions
-    private static final int S_MODE_CURR = 38, S_MODE_BARTER = 40, S_CONFIRM = 42, S_CANCEL = 44;
-
-    public ShopCreateGUI(JavaPlugin plugin, ShopManager shopManager) {
+    public ShopCreateGUI(Plugin plugin, ShopManager shopManager) {
         this.plugin      = plugin;
         this.shopManager = shopManager;
     }
@@ -82,121 +94,164 @@ public class ShopCreateGUI implements Listener {
     // ── Ouverture ────────────────────────────────────────────────────────────────
 
     public void open(Player player) {
-        states.put(player.getUniqueId(), new CreateState());
-        player.openInventory(buildGUI(player));
+        states.put(player.getUniqueId(), new State());
+        Inventory inv = buildInv(player);
+        openInvs.put(player.getUniqueId(), inv);
+        player.openInventory(inv);
     }
 
-    // ── Construction du GUI ───────────────────────────────────────────────────────
+    // ── Construction ─────────────────────────────────────────────────────────────
 
-    private Inventory buildGUI(Player player) {
-        CreateState state = states.get(player.getUniqueId());
-        Inventory inv = Bukkit.createInventory(null, 54, TITLE);
-
-        // Remplissage fond
-        ItemStack bg = glass(Material.BLACK_STAINED_GLASS_PANE);
-        for (int i = 0; i < 54; i++) inv.setItem(i, bg);
-
-        // ── Labels ───────────────────────────────────────────────────────────────
-        inv.setItem(2,  label(Material.LIME_STAINED_GLASS_PANE,
-                "§a§l◆ ITEM EN VENTE", "§7Dépose l'item ici §8(slot central gauche)",
-                "§7puis ajuste la quantité."));
-        inv.setItem(6,  label(Material.ORANGE_STAINED_GLASS_PANE,
-                "§6§l◆ PRIX DEMANDÉ",  "§7Dépose l'item-prix ici §8(slot central droit)",
-                "§7ou sélectionne une monnaie."));
-
-        // ── Séparateur vertical ───────────────────────────────────────────────────
-        for (int r : new int[]{3, 12, 21, 30, 39, 48}) inv.setItem(r, glass(Material.WHITE_STAINED_GLASS_PANE));
-
-        // ── Zone item vendu ───────────────────────────────────────────────────────
-        if (state.sellItem != null) {
-            ItemStack display = state.sellItem.clone();
-            display.setAmount(Math.min(state.sellQty, display.getType().getMaxStackSize()));
-            inv.setItem(SLOT_SELL_ITEM, annotate(display, "§aItem en vente",
-                    "§7Quantité : §e" + state.sellQty,
-                    "§8Clic gauche : retirer l'item",
-                    "§8Clic droit  : remettre en inventaire"));
-        } else {
-            inv.setItem(SLOT_SELL_ITEM, label(Material.GRAY_STAINED_GLASS_PANE,
-                    "§7▶ Dépose l'item à vendre", "§8Clic gauche depuis ton inventaire"));
-        }
-
-        // Contrôles quantité item vendu
-        inv.setItem(S_SELL_MM,  btn(Material.RED_TERRACOTTA,    "§c§l−10",  "§7Clic : −10"));
-        inv.setItem(S_SELL_M,   btn(Material.ORANGE_TERRACOTTA, "§6§l−1",   "§7Clic gauche : −1 §8/ §7droit : −5"));
-        inv.setItem(S_SELL_DIS, qtyDisplay(state.sellQty, state.sellItem,   "§aItem en vente", true));
-        inv.setItem(S_SELL_P,   btn(Material.LIME_TERRACOTTA,   "§a§l+1",   "§7Clic gauche : +1 §8/ §7droit : +5"));
-        inv.setItem(S_SELL_PP,  btn(Material.GREEN_TERRACOTTA,  "§2§l+10",  "§7Clic : +10"));
-
-        // ── Zone item prix ────────────────────────────────────────────────────────
-        buildPriceZone(inv, state);
-
-        // Contrôles quantité prix (seulement en mode BARTER ou si monnaie sélectionnable)
-        inv.setItem(S_PRICE_MM,  btn(Material.RED_TERRACOTTA,    "§c§l−10",  "§7Clic : −10"));
-        inv.setItem(S_PRICE_M,   btn(Material.ORANGE_TERRACOTTA, "§6§l−1",   "§7Clic gauche : −1 §8/ §7droit : −5"));
-        inv.setItem(S_PRICE_DIS, qtyDisplay(state.priceQty, state.priceItem, "§6Prix demandé", false));
-        inv.setItem(S_PRICE_P,   btn(Material.LIME_TERRACOTTA,   "§a§l+1",   "§7Clic gauche : +1 §8/ §7droit : +5"));
-        inv.setItem(S_PRICE_PP,  btn(Material.GREEN_TERRACOTTA,  "§2§l+10",  "§7Clic : +10"));
-
-        // ── Modes ─────────────────────────────────────────────────────────────────
-        boolean isCurr = state.mode == ShopListing.PriceMode.CURRENCY;
-        inv.setItem(S_MODE_CURR,   modeBtn(Material.EMERALD, "§a💰 Mode Monnaie",
-                "§7Prix en item de monnaie fixe :",
-                "§8Fer · Or · Diamant · Émeraude",
-                isCurr ? "§a✔ Actif" : "§7Clic pour sélectionner"));
-        inv.setItem(S_MODE_BARTER, modeBtn(Material.GOLD_INGOT, "§6🔄 Mode Troc",
-                "§7Prix en n'importe quel item.",
-                "§8Ex : 16 cobble contre 2 steak",
-                !isCurr ? "§a✔ Actif" : "§7Clic pour sélectionner"));
-
-        // ── Actions ───────────────────────────────────────────────────────────────
-        boolean valid = canConfirm(state);
-        inv.setItem(S_CONFIRM, label(valid ? Material.LIME_STAINED_GLASS_PANE : Material.GRAY_STAINED_GLASS_PANE,
-                valid ? "§a§l✔ Confirmer l'annonce" : "§8✔ Confirmer §c(annonce incomplète)",
-                valid ? "§7Item : " + ShopListing.displayName(state.sellItem) + " ×" + state.sellQty : "§cDépose un item à vendre.",
-                valid ? "§7Prix : " + getPriceDescription(state) : "§cVérifie le prix.",
-                valid ? "" : "",
-                valid ? "§eClic pour mettre en vente !" : ""));
-        inv.setItem(S_CANCEL, label(Material.RED_STAINED_GLASS_PANE,
-                "§c§l✗ Annuler", "§7Retour au shop (aucun item perdu)."));
-
+    private Inventory buildInv(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 45, TITLE);
+        fillInv(inv, player);
         return inv;
     }
 
-    private void buildPriceZone(Inventory inv, CreateState state) {
-        if (state.mode == ShopListing.PriceMode.CURRENCY) {
-            // Afficher les 4 monnaies comme sélecteurs
-            ShopListing.Currency[] currencies = ShopListing.Currency.values();
-            int[] currSlots = {13, 14, 15, 16};
-            // Slot 15 = la monnaie sélectionnée en gros, les autres autour
-            for (int ci = 0; ci < currencies.length; ci++) {
-                ShopListing.Currency cur = currencies[ci];
-                boolean selected = cur == state.currency;
-                ItemStack icon = new ItemStack(cur.getMaterial(), selected ? state.priceQty : 1);
-                ItemMeta meta = icon.getItemMeta();
-                if (meta != null) {
-                    meta.setDisplayName((selected ? "§a§l✔ " : "§7") + cur.getDisplayName());
-                    meta.setLore(Arrays.asList(
-                            "§7Quantité : §e" + (selected ? state.priceQty : 1),
-                            selected ? "§a✔ Sélectionné" : "§7Clic pour choisir"
-                    ));
-                    if (selected) meta.addEnchant(org.bukkit.enchantments.Enchantment.LUCK_OF_THE_SEA, 1, true);
-                    meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS,
-                            org.bukkit.inventory.ItemFlag.HIDE_ATTRIBUTES);
-                    icon.setItemMeta(meta);
-                }
-                inv.setItem(currSlots[ci], icon);
-            }
+    /** Met à jour l'inventaire existant sans le fermer (pas de bug client drag) */
+    private void refresh(Player player) {
+        Inventory inv = openInvs.get(player.getUniqueId());
+        if (inv == null) return;
+        fillInv(inv, player);
+    }
+
+    private void fillInv(Inventory inv, Player player) {
+        State s = states.get(player.getUniqueId());
+        if (s == null) return;
+
+        // Vider tout
+        inv.clear();
+
+        // ── Rangée 0 — header ────────────────────────────────────────────────────
+        ItemStack bgDark = glass(Material.BLACK_STAINED_GLASS_PANE);
+        for (int i = 0; i < 9; i++) inv.setItem(i, bgDark);
+
+        inv.setItem(0, label(Material.PAPER, "§e§l📋 Mode d'emploi",
+                "§71. §fShift-clique §7l'item à vendre depuis ton inventaire",
+                "§7   → il apparaît dans §e[ Item en vente ]",
+                "§72. §fAjuste la quantité §7avec §e- §7et §e+",
+                "§73. §fChoisis le prix §7(monnaie ou troc)",
+                "§74. §fClique §a§l✔ CONFIRMER §7pour mettre en vente",
+                "",
+                "§8L'item est retiré de ton inventaire.",
+                "§8Tu peux le récupérer avec §7/fac recuperer <ID>§8."));
+
+        inv.setItem(4, label(Material.GOLD_INGOT, "§6§l⬡ Annonce en cours",
+                s.sellItem == null ? "§cAucun item sélectionné" :
+                    "§fVente : §e" + s.sellQty + "× " + ShopListing.displayName(s.sellItem),
+                s.sellItem == null ? "" :
+                    "§fPrix : " + getPriceDesc(s)));
+
+        inv.setItem(8, label(Material.BARRIER, "§c§l✗ ANNULER",
+                "§7Ferme ce menu.",
+                "§8Aucun item retiré."));
+
+        // ── Rangée 1 — zones de dépôt ────────────────────────────────────────────
+        // Item en vente
+        inv.setItem(9,  label(Material.LIME_STAINED_GLASS_PANE,  "§a§l▼ ITEM À VENDRE",   "§7Shift-clic depuis ton inventaire"));
+        inv.setItem(10, label(Material.LIME_STAINED_GLASS_PANE,  "§a§l▼ ITEM À VENDRE",   "§7Shift-clic depuis ton inventaire"));
+        inv.setItem(SLOT_ITEM, s.sellItem != null
+                ? annotate(s.sellItem, s.sellQty, "§aItem en vente", true)
+                : placeholder(Material.LIME_DYE, "§a§l[ Item en vente ]",
+                        "§7Shift-clique un item depuis",
+                        "§7ton inventaire ci-dessous.", "", "§8Tous types acceptés."));
+        inv.setItem(12, label(Material.LIME_STAINED_GLASS_PANE,  "§a§l▼ ITEM À VENDRE",   "§7Shift-clic depuis ton inventaire"));
+
+        // Séparateur
+        inv.setItem(13, label(Material.WHITE_STAINED_GLASS_PANE, "§f⟷ CONTRE"));
+
+        // Prix
+        inv.setItem(14, label(Material.YELLOW_STAINED_GLASS_PANE,  "§6§l▼ PRIX",             "§7Monnaie ou item de troc"));
+        if (s.mode == ShopListing.PriceMode.BARTER) {
+            inv.setItem(SLOT_PRICE, s.priceItem != null
+                    ? annotate(s.priceItem, s.priceQty, "§6Prix (troc)", false)
+                    : placeholder(Material.GOLD_NUGGET, "§6§l[ Item prix ]",
+                            "§7Shift-clique l'item que tu veux",
+                            "§7recevoir en échange.", "", "§8Ex: 2× steak, 4× pain…"));
         } else {
-            // Mode troc : slot 15 = zone de dépôt
-            if (state.priceItem != null) {
-                inv.setItem(SLOT_PRICE_ITEM, annotate(state.priceItem.clone(), "§6Item-prix (troc)",
-                        "§7Quantité : §e" + state.priceQty,
-                        "§8Clic gauche : retirer"));
-            } else {
-                inv.setItem(SLOT_PRICE_ITEM, label(Material.YELLOW_STAINED_GLASS_PANE,
-                        "§7▶ Dépose l'item prix ici", "§8Ex : 2 steak, 4 pain, 1 diamant…"));
+            // Monnaie sélectionnée
+            ItemStack cur = new ItemStack(s.currency.getMaterial(), Math.min(64, s.priceQty));
+            ItemMeta cm = cur.getItemMeta();
+            if (cm != null) {
+                cm.setDisplayName("§e" + s.priceQty + "× §f" + s.currency.getDisplayName());
+                cm.setLore(Arrays.asList("§7Mode : §aMonnaie fixe", "§7Clic pour changer de monnaie →"));
+                cur.setItemMeta(cm);
+            }
+            inv.setItem(SLOT_PRICE, cur);
+        }
+        inv.setItem(16, label(Material.YELLOW_STAINED_GLASS_PANE,  "§6§l▼ PRIX",             "§7Monnaie ou item de troc"));
+        inv.setItem(17, label(Material.YELLOW_STAINED_GLASS_PANE,  "§6§l▼ PRIX",             "§7Monnaie ou item de troc"));
+
+        // ── Rangée 2 — quantités ─────────────────────────────────────────────────
+        inv.setItem(18, qtyBtn(Material.RED_TERRACOTTA,   "§c§l−10", "§7Retire 10"));
+        inv.setItem(19, qtyBtn(Material.ORANGE_TERRACOTTA,"§6§l−1",  "§7Retire 1  §8│ §7Clic droit: −5"));
+        inv.setItem(20, qtyDisplay(s.sellQty, "§aQté en vente", s.sellItem));
+        inv.setItem(21, qtyBtn(Material.LIME_TERRACOTTA,  "§a§l+1",  "§7Ajoute 1  §8│ §7Clic droit: +5"));
+        inv.setItem(22, qtyBtn(Material.GREEN_TERRACOTTA, "§2§l+10", "§7Ajoute 10"));
+
+        inv.setItem(23, glass(Material.GRAY_STAINED_GLASS_PANE));
+
+        inv.setItem(24, qtyBtn(Material.RED_TERRACOTTA,   "§c§l−10", "§7Retire 10 du prix"));
+        inv.setItem(25, qtyBtn(Material.ORANGE_TERRACOTTA,"§6§l−1",  "§7Retire 1  §8│ §7Clic droit: −5"));
+        inv.setItem(26, qtyDisplay(s.priceQty, "§6Qté prix", s.priceItem != null ? s.priceItem :
+                new ItemStack(s.currency.getMaterial())));
+
+        // pas de +1/+10 pour le prix en rangée 2 (manque de place) - scroll aussi
+        inv.setItem(27, qtyBtn(Material.LIME_TERRACOTTA,  "§a§l+1",  "§7Ajoute 1  §8│ §7Clic droit: +5"));
+        inv.setItem(28, qtyBtn(Material.GREEN_TERRACOTTA, "§2§l+10", "§7Ajoute 10 au prix"));
+
+        // ── Rangée 3 — modes de paiement ─────────────────────────────────────────
+        boolean isCurr = s.mode == ShopListing.PriceMode.CURRENCY;
+        inv.setItem(29, modeItem(Material.EMERALD, isCurr, "§a§l💰 Mode Monnaie",
+                "§7Prix en item fixe :", "§8Lingot fer/or, diamant, émeraude",
+                isCurr ? "§a✔ Actif" : "§7Clic pour activer"));
+
+        // Sélecteurs monnaie (gris si mode troc actif)
+        ShopListing.Currency[] curs = ShopListing.Currency.values();
+        int[] curSlots = {30, 31, 32, 33};
+        for (int ci = 0; ci < curs.length; ci++) {
+            boolean sel = isCurr && curs[ci] == s.currency;
+            ItemStack ci_item = new ItemStack(curs[ci].getMaterial());
+            ItemMeta cm = ci_item.getItemMeta();
+            if (cm != null) {
+                cm.setDisplayName((sel ? "§a§l✔ " : (isCurr ? "§7" : "§8")) + curs[ci].getDisplayName());
+                if (sel) cm.addEnchant(org.bukkit.enchantments.Enchantment.LURE, 1, true);
+                cm.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS,
+                        org.bukkit.inventory.ItemFlag.HIDE_ATTRIBUTES);
+                cm.setLore(Collections.singletonList(sel ? "§a✔ Sélectionné" : (isCurr ? "§7Clic pour choisir" : "§8Activer Mode Monnaie")));
+                ci_item.setItemMeta(cm);
+            }
+            inv.setItem(curSlots[ci], isCurr ? ci_item : glass(Material.GRAY_STAINED_GLASS_PANE));
+            if (!isCurr) { // montrer le nom quand même
+                inv.setItem(curSlots[ci], label(Material.GRAY_STAINED_GLASS_PANE,
+                        "§8" + curs[ci].getDisplayName(), "§8(mode troc actif)"));
             }
         }
+
+        inv.setItem(34, modeItem(Material.GOLD_INGOT, !isCurr, "§6§l🔄 Mode Troc",
+                "§7Prix en n'importe quel item.",
+                "§8Ex: 16 cobble contre 2 steak",
+                !isCurr ? "§a✔ Actif" : "§7Clic pour activer"));
+
+        // ── Rangée 4 — confirmer/annuler ─────────────────────────────────────────
+        ItemStack bgGlass = glass(Material.BLACK_STAINED_GLASS_PANE);
+        for (int i = 36; i < 45; i++) inv.setItem(i, bgGlass);
+
+        boolean ready = canConfirm(s);
+        inv.setItem(37, ready
+                ? label(Material.LIME_STAINED_GLASS_PANE, "§a§l✔  CONFIRMER",
+                        "§fVente : §e" + (s.sellItem != null ? s.sellQty + "× " + ShopListing.displayName(s.sellItem) : "?"),
+                        "§fPrix : " + getPriceDesc(s),
+                        "", "§aClic pour mettre en vente !")
+                : label(Material.GRAY_STAINED_GLASS_PANE, "§8✔ Confirmer",
+                        "§cDépose d'abord un item à vendre."));
+        inv.setItem(38, ready
+                ? label(Material.LIME_STAINED_GLASS_PANE, "§a§l✔  CONFIRMER",
+                        "§aClic pour mettre en vente !")
+                : label(Material.GRAY_STAINED_GLASS_PANE, "§8✔ Confirmer",
+                        "§cItem manquant."));
+        inv.setItem(39, label(Material.RED_STAINED_GLASS_PANE, "§c§l✗  ANNULER",
+                "§7Ferme le menu.", "§8Aucun item retiré de ton inventaire."));
     }
 
     // ── Events ────────────────────────────────────────────────────────────────────
@@ -206,143 +261,148 @@ public class ShopCreateGUI implements Listener {
         if (!(e.getWhoClicked() instanceof Player player)) return;
         if (!e.getView().getTitle().equals(TITLE)) return;
 
-        CreateState state = states.get(player.getUniqueId());
-        if (state == null) { e.setCancelled(true); return; }
+        State s = states.get(player.getUniqueId());
+        if (s == null) { e.setCancelled(true); return; }
 
         int raw = e.getRawSlot();
-        int invSize = e.getInventory().getSize();
+        int invSize = e.getView().getTopInventory().getSize(); // 45
 
-        // ── Clic depuis l'inventaire du joueur → déposer dans les zones actives ──
-        if (raw >= invSize) {
-            // Clic depuis l'inventaire du joueur
+        // ── Shift-clic depuis l'inventaire du joueur ─────────────────────────────
+        if (raw >= invSize && e.isShiftClick()) {
+            e.setCancelled(true);
             ItemStack clicked = e.getCurrentItem();
-            if (clicked == null || clicked.getType() == Material.AIR) { e.setCancelled(true); return; }
-
-            // Si shift-clic ou clic sur un item dans l'inventaire joueur, on laisse passer SAUF si c'est une zone protégée
-            // Ici on détourne : si l'item vendu n'est pas défini, on le saisit
-            if (e.isShiftClick()) {
-                e.setCancelled(true);
-                // Déposer dans la zone item vendu si vide, sinon zone prix si barter et vide
-                if (state.sellItem == null) {
-                    state.sellItem = new ItemStack(clicked.getType(), 1);
-                    state.sellItem.setItemMeta(clicked.getItemMeta() != null ? clicked.getItemMeta().clone() : null);
-                    state.sellQty = clicked.getAmount();
-                } else if (state.mode == ShopListing.PriceMode.BARTER && state.priceItem == null) {
-                    state.priceItem = new ItemStack(clicked.getType(), 1);
-                    state.priceItem.setItemMeta(clicked.getItemMeta() != null ? clicked.getItemMeta().clone() : null);
-                    state.priceQty = clicked.getAmount();
-                }
-                refresh(player, e.getInventory());
-                return;
+            if (clicked == null || clicked.getType() == Material.AIR) return;
+            if (s.sellItem == null) {
+                s.sellItem = stripToType(clicked);
+                s.sellQty  = clicked.getAmount();
+            } else if (s.mode == ShopListing.PriceMode.BARTER && s.priceItem == null) {
+                s.priceItem = stripToType(clicked);
+                s.priceQty  = clicked.getAmount();
+            } else {
+                player.sendMessage("§c[Shop] Les deux zones sont déjà remplies. Retire un item en cliquant dessus.");
             }
-            // Clic simple depuis inventaire joueur → on laisse Bukkit gérer (drag vers le GUI)
-            // mais on intercepte si destination = slot vendu ou prix
+            refresh(player);
             return;
         }
 
-        e.setCancelled(true);
+        // Clic dans la partie basse → laisser passer (l'inventaire joueur)
+        if (raw >= invSize) return;
 
-        // ── Slot item vendu ───────────────────────────────────────────────────────
-        if (raw == SLOT_SELL_ITEM) {
-            if (state.sellItem != null) {
-                // Retirer l'item au joueur (on le rend si possible)
-                if (e.isLeftClick()) {
-                    giveItemBack(player, state.sellItem, state.sellQty);
-                    state.sellItem = null; state.sellQty = 1;
-                }
+        e.setCancelled(true); // bloquer tout le reste dans le GUI
+
+        // ── Slot item en vente ────────────────────────────────────────────────────
+        if (raw == SLOT_ITEM) {
+            if (s.sellItem != null) {
+                // Rendre l'item
+                giveBack(player, s.sellItem, s.sellQty);
+                s.sellItem = null; s.sellQty = 1;
+                refresh(player);
             } else {
-                // Essayer de prendre l'item du curseur
-                ItemStack cursor = e.getCursor();
+                // Essayer de prendre depuis le curseur
+                ItemStack cursor = player.getItemOnCursor();
                 if (cursor != null && cursor.getType() != Material.AIR) {
-                    state.sellItem = new ItemStack(cursor.getType(), 1);
-                    if (cursor.getItemMeta() != null) state.sellItem.setItemMeta(cursor.getItemMeta().clone());
-                    state.sellQty = cursor.getAmount();
+                    s.sellItem = stripToType(cursor);
+                    s.sellQty  = cursor.getAmount();
                     player.setItemOnCursor(new ItemStack(Material.AIR));
+                    refresh(player);
+                } else {
+                    player.sendMessage("§7[Shop] Shift-clique un item depuis ton inventaire pour le déposer ici.");
                 }
             }
-            refresh(player, e.getInventory()); return;
+            return;
         }
 
-        // ── Slot item prix (mode troc) ────────────────────────────────────────────
-        if (raw == SLOT_PRICE_ITEM && state.mode == ShopListing.PriceMode.BARTER) {
-            if (state.priceItem != null) {
-                if (e.isLeftClick()) {
-                    giveItemBack(player, state.priceItem, state.priceQty);
-                    state.priceItem = null; state.priceQty = 1;
-                }
+        // ── Slot prix (troc) ──────────────────────────────────────────────────────
+        if (raw == SLOT_PRICE && s.mode == ShopListing.PriceMode.BARTER) {
+            if (s.priceItem != null) {
+                giveBack(player, s.priceItem, s.priceQty);
+                s.priceItem = null; s.priceQty = 1;
+                refresh(player);
             } else {
-                ItemStack cursor = e.getCursor();
+                ItemStack cursor = player.getItemOnCursor();
                 if (cursor != null && cursor.getType() != Material.AIR) {
-                    state.priceItem = new ItemStack(cursor.getType(), 1);
-                    if (cursor.getItemMeta() != null) state.priceItem.setItemMeta(cursor.getItemMeta().clone());
-                    state.priceQty = cursor.getAmount();
+                    s.priceItem = stripToType(cursor);
+                    s.priceQty  = cursor.getAmount();
                     player.setItemOnCursor(new ItemStack(Material.AIR));
+                    refresh(player);
                 }
             }
-            refresh(player, e.getInventory()); return;
+            return;
         }
 
-        // ── Sélecteurs de monnaie (mode CURRENCY) ────────────────────────────────
-        if (state.mode == ShopListing.PriceMode.CURRENCY) {
+        // ── Sélecteurs de monnaie ─────────────────────────────────────────────────
+        if (s.mode == ShopListing.PriceMode.CURRENCY) {
             ShopListing.Currency[] curs = ShopListing.Currency.values();
-            int[] currSlots = {13, 14, 15, 16};
-            for (int ci = 0; ci < currSlots.length; ci++) {
-                if (raw == currSlots[ci]) { state.currency = curs[ci]; refresh(player, e.getInventory()); return; }
+            int[] slots = {30, 31, 32, 33};
+            for (int ci = 0; ci < slots.length; ci++) {
+                if (raw == slots[ci]) { s.currency = curs[ci]; refresh(player); return; }
             }
         }
 
-        // ── Contrôles quantité item vendu ─────────────────────────────────────────
-        if (raw == S_SELL_MM) { state.sellQty = Math.max(1, state.sellQty - 10); refresh(player, e.getInventory()); return; }
-        if (raw == S_SELL_M)  {
-            int delta = e.isRightClick() ? 5 : 1;
-            state.sellQty = Math.max(1, state.sellQty - delta);
-            refresh(player, e.getInventory()); return;
-        }
-        if (raw == S_SELL_P)  {
-            int delta = e.isRightClick() ? 5 : 1;
-            state.sellQty = Math.min(2304, state.sellQty + delta); // max 36 stacks
-            refresh(player, e.getInventory()); return;
-        }
-        if (raw == S_SELL_PP) { state.sellQty = Math.min(2304, state.sellQty + 10); refresh(player, e.getInventory()); return; }
+        // ── Quantité item vendu ───────────────────────────────────────────────────
+        if (raw == 18) { s.sellQty = Math.max(1, s.sellQty - 10); refresh(player); return; }
+        if (raw == 19) { s.sellQty = Math.max(1, s.sellQty - (e.isRightClick() ? 5 : 1)); refresh(player); return; }
+        if (raw == 21) { s.sellQty = Math.min(2304, s.sellQty + (e.isRightClick() ? 5 : 1)); refresh(player); return; }
+        if (raw == 22) { s.sellQty = Math.min(2304, s.sellQty + 10); refresh(player); return; }
 
-        // ── Contrôles quantité prix ───────────────────────────────────────────────
-        if (raw == S_PRICE_MM) { state.priceQty = Math.max(1, state.priceQty - 10); refresh(player, e.getInventory()); return; }
-        if (raw == S_PRICE_M)  {
-            int delta = e.isRightClick() ? 5 : 1;
-            state.priceQty = Math.max(1, state.priceQty - delta);
-            refresh(player, e.getInventory()); return;
-        }
-        if (raw == S_PRICE_P)  {
-            int delta = e.isRightClick() ? 5 : 1;
-            state.priceQty = Math.min(2304, state.priceQty + delta);
-            refresh(player, e.getInventory()); return;
-        }
-        if (raw == S_PRICE_PP) { state.priceQty = Math.min(2304, state.priceQty + 10); refresh(player, e.getInventory()); return; }
+        // ── Quantité prix ─────────────────────────────────────────────────────────
+        if (raw == 24) { s.priceQty = Math.max(1, s.priceQty - 10); refresh(player); return; }
+        if (raw == 25) { s.priceQty = Math.max(1, s.priceQty - (e.isRightClick() ? 5 : 1)); refresh(player); return; }
+        if (raw == 27) { s.priceQty = Math.min(2304, s.priceQty + (e.isRightClick() ? 5 : 1)); refresh(player); return; }
+        if (raw == 28) { s.priceQty = Math.min(2304, s.priceQty + 10); refresh(player); return; }
 
         // ── Modes ─────────────────────────────────────────────────────────────────
-        if (raw == S_MODE_CURR) {
-            state.mode = ShopListing.PriceMode.CURRENCY;
-            if (state.priceItem != null) { giveItemBack(player, state.priceItem, state.priceQty); state.priceItem = null; }
-            refresh(player, e.getInventory()); return;
+        if (raw == 29) { // Monnaie
+            s.mode = ShopListing.PriceMode.CURRENCY;
+            if (s.priceItem != null) { giveBack(player, s.priceItem, s.priceQty); s.priceItem = null; }
+            refresh(player); return;
         }
-        if (raw == S_MODE_BARTER) {
-            state.mode = ShopListing.PriceMode.BARTER;
-            refresh(player, e.getInventory()); return;
+        if (raw == 34) { // Troc
+            s.mode = ShopListing.PriceMode.BARTER;
+            refresh(player); return;
         }
 
         // ── Confirmer ─────────────────────────────────────────────────────────────
-        if (raw == S_CONFIRM) {
-            if (!canConfirm(state)) {
-                player.sendMessage("§8[§6Shop§8] §cAnnonce incomplète ! Dépose un item et configure le prix.");
+        if (raw == 37 || raw == 38) {
+            if (!canConfirm(s)) {
+                player.sendMessage("§c[Shop] Dépose d'abord un item à vendre !");
                 return;
             }
-            confirmListing(player, state);
+            // Vérifier que le joueur possède l'item
+            int inInv = countInInv(player, s.sellItem);
+            if (inInv < s.sellQty) {
+                player.sendMessage("§c[Shop] Tu n'as que §e" + inInv + "× " + ShopListing.displayName(s.sellItem)
+                        + " §cdans ton inventaire (besoin : §e" + s.sellQty + "§c).");
+                return;
+            }
+            removeFromInv(player, s.sellItem, s.sellQty);
+            ItemStack forSale = s.sellItem.clone();
+            forSale.setAmount(s.sellQty);
+            ShopListing listing;
+            if (s.mode == ShopListing.PriceMode.CURRENCY) {
+                listing = shopManager.createCurrencyListing(player, forSale, s.currency, s.priceQty);
+                player.sendMessage("§8[§6Shop§8] §aAnnonce créée !");
+                player.sendMessage("§7  Vente  : §e" + s.sellQty + "× " + ShopListing.displayName(forSale));
+                player.sendMessage("§7  Prix   : §e" + s.priceQty + "× " + s.currency.getDisplayName());
+            } else {
+                ItemStack price = s.priceItem.clone();
+                price.setAmount(s.priceQty);
+                listing = shopManager.createBarterListing(player, forSale, price);
+                player.sendMessage("§8[§6Shop§8] §aAnnonce de troc créée !");
+                player.sendMessage("§7  Vente  : §e" + s.sellQty + "× " + ShopListing.displayName(forSale));
+                player.sendMessage("§7  Contre : §e" + s.priceQty + "× " + ShopListing.displayName(price));
+            }
+            player.sendMessage("§8ID : §7" + listing.getId() + " §8— §7/fac recuperer " + listing.getId());
+            states.remove(player.getUniqueId());
+            openInvs.remove(player.getUniqueId());
+            player.closeInventory();
+            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8f, 1.2f);
             return;
         }
 
         // ── Annuler ───────────────────────────────────────────────────────────────
-        if (raw == S_CANCEL) {
-            cancelAndClose(player, state);
+        if (raw == 8 || raw == 39) {
+            cancelAndClose(player, s);
         }
     }
 
@@ -350,166 +410,109 @@ public class ShopCreateGUI implements Listener {
     public void onInventoryClose(InventoryCloseEvent e) {
         if (!(e.getPlayer() instanceof Player player)) return;
         if (!e.getView().getTitle().equals(TITLE)) return;
-        CreateState state = states.remove(player.getUniqueId());
-        if (state != null) {
-            // Rendre les items si le GUI est fermé sans confirmation
-            if (state.sellItem != null)  giveItemBack(player, state.sellItem, state.sellQty);
-            if (state.priceItem != null) giveItemBack(player, state.priceItem, state.priceQty);
+        State s = states.remove(player.getUniqueId());
+        openInvs.remove(player.getUniqueId());
+        if (s != null) {
+            // Rendre les items déposés
+            if (s.sellItem != null)  giveBack(player, s.sellItem, s.sellQty);
+            if (s.priceItem != null) giveBack(player, s.priceItem, s.priceQty);
         }
     }
 
-    // ── Logique de création ───────────────────────────────────────────────────────
-
-    private void confirmListing(Player player, CreateState state) {
-        // Vérifier que le joueur possède bien les items à vendre
-        int inInv = countInInventory(player, state.sellItem);
-        if (inInv < state.sellQty) {
-            player.sendMessage("§8[§6Shop§8] §cTu n'as pas assez de §e"
-                    + ShopListing.displayName(state.sellItem)
-                    + " §c(besoin : " + state.sellQty + ", possédé : " + inInv + ").");
-            return;
-        }
-
-        // Retirer les items de l'inventaire du vendeur
-        removeFromInventory(player, state.sellItem, state.sellQty);
-
-        // Créer la mise en standby
-        ItemStack forSale = state.sellItem.clone();
-        forSale.setAmount(state.sellQty);
-
-        ShopListing listing;
-        if (state.mode == ShopListing.PriceMode.CURRENCY) {
-            listing = shopManager.createCurrencyListing(player, forSale, state.currency, state.priceQty);
-            player.sendMessage("§8[§6Shop§8] §aAnnonce créée !");
-            player.sendMessage("§7Vente : §e" + state.sellQty + "× " + ShopListing.displayName(forSale));
-            player.sendMessage("§7Prix  : §e" + state.priceQty + "× " + state.currency.getDisplayName());
-        } else {
-            ItemStack price = state.priceItem.clone();
-            price.setAmount(state.priceQty);
-            listing = shopManager.createBarterListing(player, forSale, price);
-            player.sendMessage("§8[§6Shop§8] §aAnnonce de troc créée !");
-            player.sendMessage("§7Vente  : §e" + state.sellQty + "× " + ShopListing.displayName(forSale));
-            player.sendMessage("§7Contre : §e" + state.priceQty + "× " + ShopListing.displayName(price));
-        }
-        player.sendMessage("§8ID : §7" + listing.getId() + " §8— §7/fac recuperer " + listing.getId() + " §7pour reprendre.");
-
-        states.remove(player.getUniqueId());
-        player.closeInventory();
-        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.8f, 1.2f);
-    }
-
-    private void cancelAndClose(Player player, CreateState state) {
-        states.remove(player.getUniqueId());
-        // Les items sont rendus par onInventoryClose
-        player.closeInventory();
-    }
-
-    // ── Helpers GUI ───────────────────────────────────────────────────────────────
-
-    private void refresh(Player player, Inventory inv) {
-        CreateState state = states.get(player.getUniqueId());
-        if (state == null) return;
-        Inventory fresh = buildGUI(player);
-        for (int i = 0; i < fresh.getSize(); i++) inv.setItem(i, fresh.getItem(i));
-        // Garder les items du joueur dans la partie basse intacts
-    }
+    // ── Item builders ─────────────────────────────────────────────────────────────
 
     private ItemStack glass(Material mat) {
         ItemStack is = new ItemStack(mat);
-        ItemMeta meta = is.getItemMeta();
-        if (meta != null) { meta.setDisplayName(" "); is.setItemMeta(meta); }
+        ItemMeta m = is.getItemMeta();
+        if (m != null) { m.setDisplayName(" "); is.setItemMeta(m); }
         return is;
     }
-
     private ItemStack label(Material mat, String name, String... lore) {
         ItemStack is = new ItemStack(mat);
-        ItemMeta meta = is.getItemMeta();
-        if (meta == null) return is;
-        meta.setDisplayName(name);
-        if (lore.length > 0) meta.setLore(Arrays.asList(lore));
-        meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ATTRIBUTES,
+        ItemMeta m = is.getItemMeta(); if (m == null) return is;
+        m.setDisplayName(name);
+        if (lore.length > 0) m.setLore(Arrays.asList(lore));
+        m.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ATTRIBUTES,
                 org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
-        is.setItemMeta(meta);
-        return is;
+        is.setItemMeta(m); return is;
     }
-
-    private ItemStack btn(Material mat, String name, String loreStr) {
-        return label(mat, name, loreStr);
-    }
-
-    private ItemStack annotate(ItemStack base, String header, String... extraLore) {
-        ItemStack copy = base.clone();
-        ItemMeta meta = copy.getItemMeta();
-        if (meta == null) return copy;
-        if (!meta.hasDisplayName()) meta.setDisplayName("§f" + ShopListing.displayName(copy));
-        List<String> lore = new ArrayList<>();
-        lore.add("§8§m──────────────");
-        lore.add(header);
-        lore.addAll(Arrays.asList(extraLore));
-        meta.setLore(lore);
-        copy.setItemMeta(meta);
-        return copy;
-    }
-
-    private ItemStack qtyDisplay(int qty, ItemStack ref, String label, boolean isSell) {
-        Material mat = (ref != null) ? ref.getType() : (isSell ? Material.LIME_DYE : Material.GOLD_INGOT);
-        ItemStack is = new ItemStack(mat, Math.max(1, Math.min(qty, mat.getMaxStackSize())));
-        ItemMeta meta = is.getItemMeta();
-        if (meta == null) return is;
-        meta.setDisplayName(label);
-        List<String> lore = new ArrayList<>();
-        lore.add("§7Quantité : §e§l" + qty);
-        if (ref != null) {
-            int maxStack = ref.getType().getMaxStackSize();
-            int stacks = qty / maxStack;
-            int rem = qty % maxStack;
-            if (stacks > 0) lore.add("§8= §7" + stacks + " stack(s)" + (rem > 0 ? " + " + rem : ""));
-        }
-        lore.add("§8Utilise ± pour ajuster.");
-        meta.setLore(lore);
-        is.setItemMeta(meta);
-        return is;
-    }
-
-    private ItemStack modeBtn(Material mat, String name, String... lore) {
+    private ItemStack placeholder(Material mat, String name, String... lore) {
         return label(mat, name, lore);
     }
-
-    private boolean canConfirm(CreateState state) {
-        if (state.sellItem == null || state.sellQty < 1) return false;
-        if (state.mode == ShopListing.PriceMode.CURRENCY) {
-            return state.currency != null && state.priceQty > 0;
-        } else {
-            return state.priceItem != null && state.priceQty > 0;
+    private ItemStack qtyBtn(Material mat, String name, String lore) {
+        return label(mat, name, lore);
+    }
+    private ItemStack modeItem(Material mat, boolean active, String name, String... lore) {
+        ItemStack is = label(mat, name, lore);
+        if (active) {
+            ItemMeta m = is.getItemMeta();
+            if (m != null) {
+                m.addEnchant(org.bukkit.enchantments.Enchantment.LURE, 1, true);
+                m.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
+                is.setItemMeta(m);
+            }
         }
+        return is;
+    }
+    private ItemStack qtyDisplay(int qty, String label, ItemStack ref) {
+        Material mat = (ref != null && ref.getType() != Material.AIR) ? ref.getType() : Material.PAPER;
+        ItemStack is = new ItemStack(mat, Math.max(1, Math.min(qty, mat.getMaxStackSize())));
+        ItemMeta m = is.getItemMeta(); if (m == null) return is;
+        m.setDisplayName(label);
+        int stacks = qty / 64, rem = qty % 64;
+        List<String> lore = new ArrayList<>();
+        lore.add("§7Quantité : §e§l" + qty);
+        if (stacks > 0) lore.add("§8= " + stacks + " stack(s)" + (rem > 0 ? " + " + rem : ""));
+        m.setLore(lore); is.setItemMeta(m); return is;
+    }
+    private ItemStack annotate(ItemStack type, int qty, String header, boolean isSell) {
+        ItemStack copy = type.clone();
+        copy.setAmount(Math.max(1, Math.min(qty, type.getType().getMaxStackSize())));
+        ItemMeta m = copy.getItemMeta(); if (m == null) return copy;
+        if (!m.hasDisplayName()) m.setDisplayName("§f" + ShopListing.displayName(copy));
+        List<String> lore = new ArrayList<>();
+        lore.add("§8§m──────────");
+        lore.add(header);
+        lore.add("§7Quantité : §e" + qty);
+        lore.add(isSell ? "§8Clic gauche : retirer" : "§8Clic gauche : retirer (mode troc)");
+        m.setLore(lore); copy.setItemMeta(m); return copy;
     }
 
-    private String getPriceDescription(CreateState state) {
-        if (state.mode == ShopListing.PriceMode.CURRENCY)
-            return state.priceQty + "× " + (state.currency != null ? state.currency.getDisplayName() : "?");
-        if (state.priceItem != null) return state.priceQty + "× " + ShopListing.displayName(state.priceItem);
+    // ── Helpers ───────────────────────────────────────────────────────────────────
+
+    /** Garde uniquement le type (et la meta), pas la quantité */
+    private ItemStack stripToType(ItemStack is) {
+        ItemStack copy = is.clone(); copy.setAmount(1); return copy;
+    }
+
+    private boolean canConfirm(State s) {
+        if (s.sellItem == null || s.sellQty < 1) return false;
+        if (s.mode == ShopListing.PriceMode.CURRENCY) return s.currency != null && s.priceQty > 0;
+        return s.priceItem != null && s.priceQty > 0;
+    }
+
+    private String getPriceDesc(State s) {
+        if (s.mode == ShopListing.PriceMode.CURRENCY)
+            return "§e" + s.priceQty + "× §f" + (s.currency != null ? s.currency.getDisplayName() : "?");
+        if (s.priceItem != null) return "§e" + s.priceQty + "× §f" + ShopListing.displayName(s.priceItem);
         return "§cNon défini";
     }
 
-    // ── Inventaire helpers ────────────────────────────────────────────────────────
-
-    private void giveItemBack(Player player, ItemStack type, int qty) {
-        ItemStack give = type.clone();
-        give.setAmount(qty);
-        ShopManager.giveOrDrop(player, give);
+    private void giveBack(Player player, ItemStack type, int qty) {
+        ItemStack give = type.clone(); give.setAmount(qty);
+        Map<Integer, ItemStack> leftover = player.getInventory().addItem(give);
+        leftover.values().forEach(is -> player.getWorld().dropItemNaturally(player.getLocation(), is));
     }
 
-    private int countInInventory(Player player, ItemStack type) {
+    private int countInInv(Player player, ItemStack type) {
         if (type == null) return 0;
         int total = 0;
-        for (ItemStack is : player.getInventory().getContents()) {
-            if (is == null || is.getType() != type.getType()) continue;
-            total += is.getAmount();
-        }
+        for (ItemStack is : player.getInventory().getContents())
+            if (is != null && is.getType() == type.getType()) total += is.getAmount();
         return total;
     }
 
-    private void removeFromInventory(Player player, ItemStack type, int qty) {
+    private void removeFromInv(Player player, ItemStack type, int qty) {
         int rem = qty;
         ItemStack[] contents = player.getInventory().getContents();
         for (int i = 0; i < contents.length && rem > 0; i++) {
@@ -521,5 +524,11 @@ public class ShopCreateGUI implements Listener {
             rem -= take;
         }
         player.getInventory().setContents(contents);
+    }
+
+    private void cancelAndClose(Player player, State s) {
+        states.remove(player.getUniqueId());
+        openInvs.remove(player.getUniqueId());
+        player.closeInventory();
     }
 }

@@ -11,7 +11,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 
@@ -42,7 +42,7 @@ public class SortMenuGUI implements Listener {
     // ── Contextes ───────────────────────────────────────────────────────────────
     public enum SortTarget { SHARED_CHEST, PERSONAL_INVENTORY }
 
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
     private final FactionManager factionManager;
     private final SharedInventoryManager sharedInvManager;
 
@@ -51,7 +51,7 @@ public class SortMenuGUI implements Listener {
     // UUID → mode sélectionné (aperçu avant confirm)
     private final Map<UUID, ChestSorter.SortMode> pendingMode = new HashMap<>();
 
-    public SortMenuGUI(JavaPlugin plugin, FactionManager factionManager,
+    public SortMenuGUI(Plugin plugin, FactionManager factionManager,
                         SharedInventoryManager sharedInvManager) {
         this.plugin          = plugin;
         this.factionManager  = factionManager;

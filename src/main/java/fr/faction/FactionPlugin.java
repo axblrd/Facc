@@ -1,5 +1,6 @@
 package fr.faction;
 
+import org.bukkit.Bukkit;
 import fr.faction.alliance.AllianceManager;
 import fr.faction.alliance.HomeManager;
 import fr.faction.alliance.PlayerTeleportManager;
@@ -26,7 +27,6 @@ import fr.faction.shop.ShopGUI;
 import fr.faction.shop.ShopManager;
 import fr.faction.trade.TradeGUI;
 import fr.faction.trade.TradeManager;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class FactionPlugin extends JavaPlugin {
@@ -169,6 +169,26 @@ public class FactionPlugin extends JavaPlugin {
             }
             return true;
         });
+        getCommand("home").setTabCompleter((sender, c, l, a) -> {
+            if (!(sender instanceof org.bukkit.entity.Player p)) return java.util.Collections.emptyList();
+            if (a.length == 1) {
+                String prefix = a[0].toLowerCase();
+                return homeManager.getHomeNames(p.getUniqueId()).stream()
+                        .filter(n -> n.toLowerCase().startsWith(prefix))
+                        .collect(java.util.stream.Collectors.toList());
+            }
+            return java.util.Collections.emptyList();
+        });
+        getCommand("delhome").setTabCompleter((sender, c, l, a) -> {
+            if (!(sender instanceof org.bukkit.entity.Player p)) return java.util.Collections.emptyList();
+            if (a.length == 1) {
+                String prefix = a[0].toLowerCase();
+                return homeManager.getHomeNames(p.getUniqueId()).stream()
+                        .filter(n -> n.toLowerCase().startsWith(prefix))
+                        .collect(java.util.stream.Collectors.toList());
+            }
+            return java.util.Collections.emptyList();
+        });
         getCommand("delhome").setExecutor((sender, c, l, a) -> {
             if (sender instanceof org.bukkit.entity.Player p && a.length >= 1) {
                 boolean ok = homeManager.deleteHome(p.getUniqueId(), a[0]);
@@ -190,6 +210,7 @@ public class FactionPlugin extends JavaPlugin {
                 new PowerBridgeListener(factionManager, powerManager, statsManager), this);
         getServer().getPluginManager().registerEvents(new ClaimListener(claimManager, factionManager), this);
         getServer().getPluginManager().registerEvents(shopGUI, this);
+        getServer().getPluginManager().registerEvents(new fr.faction.listeners.FirstJoinListener(this), this);
         getServer().getPluginManager().registerEvents(shopCreateGUI, this);
         getServer().getPluginManager().registerEvents(invSeeGUI, this);
         getServer().getPluginManager().registerEvents(allianceManager, this);
@@ -208,7 +229,7 @@ public class FactionPlugin extends JavaPlugin {
             tabManager.pruneEmptyTeams();
         }, 20L * 10, 20L * 300);
 
-        getLogger().info("FactionPlugin v5.4.1 — Paper 1.21, tab/chat/rangs refaits !");
+        getLogger().info("FactionPlugin v5.5.0 — Paper 1.21, avec système de guerre et tri de coffre !");
     }
 
     private void handleSetHome(org.bukkit.entity.Player player, String name) {

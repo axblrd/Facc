@@ -2,6 +2,49 @@
 
 ---
 
+## v5.5.0
+
+### ⚔️ Système de Guerre Complet
+- **Déclaration de guerre** entre factions avec système de sessions de combat
+- **Conquêtes de territoires** : Les factions victorieuses peuvent gagner les claims ennemis
+- **Inventaire partagé en guerre** : Accès aux ressources communes pendant les combats
+- **Sessions de guerre structurées** avec gestion des participants
+
+### 📦 Tri de Coffre (Chest Sorting)
+- **Menu GUI** pour choisir le mode de tri
+- **Tri par type** : Organise les objets par catégorie (blocs, outils, armes, etc.)
+- **Tri par rarity** : Classe les objets selon leur rareté
+- **Tri alphabétique** : Ordonne les items par nom
+- **Tri du coffre partagé** de la faction
+
+### 🏠 GUI Principal Refait
+- **Menu principal redesigné** avec une interface plus intuitive
+- **Accès rapide** à toutes les fonctionnalités de la faction
+- **Affichage des stats** et informations importantes
+- **Navigation améliorée** entre les différentes sections
+
+### 🔧 Commandes TPA Améliorées
+- `/tpa <joueur>` : Demander une téléportation
+- `/tpaccept` : Accepter une demande
+- `/tpdeny` : Refuser une demande
+- **Cooldowns** et **limites** configurables
+
+### 🔧 Commandes Home Améliorées
+- `/sethome [nom]` : Définir un point de téléportation
+- `/home [nom]` : Se téléporter à un home
+- `/delhome <nom>` : Supprimer un home
+- `/homes` : Lister tous ses homes
+- **Auto-completion** des noms de homes
+- **Limites de homes** selon le statut (solo, faction, alliance)
+
+### 🐛 Corrections et Améliorations
+- Corrections de bugs liés aux téléportations
+- Optimisation des performances globales
+- Amélioration de la gestion des events
+- Refactorisation du code pour une meilleure maintenabilité
+
+---
+
 ## v5.4.1
 
 ### 🐛 Corrections et Améliorations
@@ -97,6 +140,7 @@ src/main/java/fr/faction/shop/
 ---
 
 ## Historique
+- **v5.5.0** : Système de guerre, tri de coffre, GUI principal + corrections
 - **v5.4.1** : Optimisations et corrections de bugs
 - **v5.4.0** : Shop Global paginé + InvSee admin
 - **v4.0.0** : Refonte complète de la boutique + InvSee

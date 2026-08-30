@@ -220,7 +220,7 @@ public class MainMenuGUI implements Listener {
         // Homes
         String homeLore = "§7Homes : §e" + curHomes + "§7/§e" + maxHomes
                 + "\n§7(1 sans faction, 2 avec, 3 si allié)";
-        inv.setItem(22, make(Material.WHITE_BED, "§a§l/fac sethome [nom]", homeLore.split("\n")));
+        inv.setItem(22, make(Material.BEACON, "§a§l/fac sethome [nom]", homeLore.split("\n")));
         inv.setItem(23, make(Material.ENDER_EYE, "§a§l/fac home [nom]",    "§7Se TP à un home.", "§7Warmup 5s, cooldown 30s."));
         inv.setItem(24, make(Material.BARRIER,   "§c§l/fac delhome <nom>", "§7Supprimer un home."));
 
@@ -402,7 +402,7 @@ public class MainMenuGUI implements Listener {
                 "§e/fac claimdeny <fac>    §7Révoquer autorisation",
                 "§e/fac claimallies        §7Lister autorisations"));
 
-        inv.setItem(14, make(Material.WHITE_BED, "§a§lHomes & Spawn",
+        inv.setItem(14, make(Material.BEACON, "§a§lHomes & Spawn",
                 "§e/sethome [nom]          §7Définir un home",
                 "§e/home [nom]             §7Aller à un home",
                 "§e/delhome <nom>          §7Supprimer un home",
@@ -820,10 +820,10 @@ public class MainMenuGUI implements Listener {
                 fr.faction.alliance.HomeManager.NamedHome h = existing.stream()
                         .filter(x -> x.name.equalsIgnoreCase(name)).findFirst().orElse(null);
                 String coords = h != null ? "§8x" + (int)h.location.getX() + " y" + (int)h.location.getY() + " z" + (int)h.location.getZ() : "";
-                inv.setItem(slot, make(Material.LIME_BED, "§a§l" + name + " §8(déjà défini)",
+                inv.setItem(slot, make(Material.LIME_CONCRETE, "§a§l" + name + " §8(déjà défini)",
                         coords, "", "§eClic → redéfinir ici"));
             } else {
-                inv.setItem(slot, make(Material.GRAY_BED, "§7" + name + " §8(libre)",
+                inv.setItem(slot, make(Material.GRAY_CONCRETE, "§7" + name + " §8(libre)",
                         "§eClic → définir à ta position actuelle"));
             }
             slot += 2;
@@ -1010,7 +1010,7 @@ public class MainMenuGUI implements Listener {
     private ItemStack glowing(ItemStack is) {
         ItemMeta meta = is.getItemMeta();
         if (meta == null) return is;
-        meta.addEnchant(Enchantment.LUCK_OF_THE_SEA, 1, true);
+        meta.addEnchant(Enchantment.LURE, 1, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         is.setItemMeta(meta);
         return is;

@@ -6,7 +6,7 @@ Plugin Minecraft complet de gestion de factions pour serveur **Paper 1.21**
 
 **FactionPlugin** est un plugin Minecraft tout-en-un qui révolutionne l'expérience de jeu sur votre serveur ! Il combine gestion de factions avancée, statistiques détaillées, système de puissance stratégique, commerce entre joueurs, et bien plus encore.
 
-Conçu pour Paper 1.21, ce plugin offre une expérience immersive et complète avec une interface intuitive via GUI, des systèmes de protection de territoire, et un écosystème économique intégré.
+Conçu pour Paper 1.21, ce plugin offre une expérience immersive et complète avec une interface intuitive via GUI, des systèmes de protection de territoire, un écosystème économique intégré, un système de guerre entre factions, et bien d'autres fonctionnalités premium.
 
 ## ✨ Fonctionnalités Principales
 
@@ -15,6 +15,12 @@ Conçu pour Paper 1.21, ce plugin offre une expérience immersive et complète a
 - **Interface GUI interactive** accessible via `/faction`
 - **Invitations et gestion des membres** en temps réel
 - **Système d'alliances** entre factions pour des alliances stratégiques
+
+### ⚔️ Système de Guerre (War System)
+- **Déclarez la guerre** à d'autres factions ennemies
+- **Système de sessions de combat** structuré
+- **Conquêtes de territoires** : Gagnez les claims ennemis
+- **Récompenses de victoire** pour les factions victorieuses
 
 ### 🏦 Banque de Faction (Emerald Bank)
 - **Coffre partagé** : Déposez et retirez des émeraudes en toute sécurité
@@ -41,6 +47,11 @@ Conçu pour Paper 1.21, ce plugin offre une expérience immersive et complète a
 - **Multi-devises** : Fer, Or, Diamant, Émeraude
 - **Paiement automatique** au vendeur
 
+### 📦 Tri de Coffre (Chest Sorting)
+- **Organisez automatiquement** vos coffres partagés
+- **Menu GUI** pour choisir le mode de tri
+- **Tri par type, rarity, ou ordre alphabétique**
+
 ### ⚡ Système de Puissance (Power System)
 - **Puissance Individuelle (PI)** basée sur vos performances PvP, survie et activité
 - **Puissance Globale (PG)** combinant les stats de tous les membres
@@ -55,7 +66,7 @@ Conçu pour Paper 1.21, ce plugin offre une expérience immersive et complète a
 
 ### 🔧 Fonctionnalités Additionnelles
 - **Système de Homes** : Créez des points de téléportation (/sethome, /home, /delhome)
-- **TPA** : Demandez à être téléporté vers un autre joueur
+- **TPA** : Demandez à être téléporté vers un autre joueur (/tpa, /tpaccept, /tpdeny)
 - **Coffres Privés** : Protégez vos objets personnels
 - **InvSee** : Consultez l'inventaire des joueurs (admin)
 - **Homes d'Alliance** : TP vers les homes des alliés
@@ -63,7 +74,7 @@ Conçu pour Paper 1.21, ce plugin offre une expérience immersive et complète a
 ## 📋 Installation
 
 1. Téléchargez la dernière version depuis la [page des releases](../../releases)
-2. Placez le fichier `FactionPlugin-5.4.1.jar` dans le dossier `plugins` de votre serveur
+2. Placez le fichier `FactionPlugin-5.5.0.jar` dans le dossier `plugins` de votre serveur
 3. Redémarrez votre serveur
 4. Le fichier de configuration sera généré automatiquement dans `plugins/FactionPlugin/`
 
@@ -89,8 +100,10 @@ Le fichier `config.yml` vous permet de personnaliser :
 | `/faction classementjoueurs` | Classement des joueurs |
 | `/sethome [nom]` | Définir un point de téléportation |
 | `/home [nom]` | Se téléporter à un home |
+| `/delhome <nom>` | Supprimer un home |
 | `/tpa <joueur>` | Demander une téléportation |
 | `/tpaccept` | Accepter une demande de TP |
+| `/tpdeny` | Refuser une demande de TP |
 
 ## 🔐 Permissions
 
@@ -111,14 +124,15 @@ Le fichier `config.yml` vous permet de personnaliser :
 mvn clean package
 ```
 
-Le JAR compilé sera généré dans `target/FactionPlugin-5.4.1.jar`
+Le JAR compilé sera généré dans `target/FactionPlugin-5.5.0.jar`
 
 ## 📥 Télécharger
 
-📦 **[Télécharger FactionPlugin-5.4.1.jar](../../releases/download/v5.4.1/FactionPlugin-5.4.1.jar)**
+📦 **[Télécharger FactionPlugin-5.5.0.jar](../../releases/download/v5.5.0/FactionPlugin-5.5.0.jar)**
 
 ## 📜 Historique des Versions
 
+- **v5.5.0** : Système de guerre complet, tri de coffre, GUI principal refait + corrections et optimisations
 - **v5.4.1** : Améliorations et optimisations de la boutique + corrections de bugs
 - **v5.4.0** : Nouvelles fonctionnalités de shop et InvSee admin
 - **v4.0.0** : Shop Global paginé + InvSee admin
