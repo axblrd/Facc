@@ -1,45 +1,7 @@
-name: FactionPlugin
-version: 5.4.0
-main: fr.faction.FactionPlugin
+name: FactionWebMap
+version: 1.1.0
+main: fr.faction.webmap.FactionWebMapPlugin
 api-version: "1.21"
-author: FactionDev
-description: >
-  Plugin de factions complet — claims, alliances, guerre inter-factions,
-  shop global, banque, troc, homes, coffres privés, TPA, InvSee, stats, classements.
-
-commands:
-  faction:
-    description: Commande principale (alias /f /fac)
-    usage: /faction [sous-commande]
-    aliases: [f, fac]
-  tpa:
-    description: Demande de téléportation à un joueur
-    usage: /tpa <joueur>
-  tpaccept:
-    description: Accepter une demande de téléportation
-    usage: /tpaccept
-    aliases: [tpac]
-  tpdeny:
-    description: Refuser une demande de téléportation
-    usage: /tpdeny
-    aliases: [tpd]
-  sethome:
-    description: Définir un home personnel (1 sans faction, 2 avec, 3 si allié)
-    usage: /sethome [nom]
-  home:
-    description: Se téléporter à un home
-    usage: /home [nom]
-  delhome:
-    description: Supprimer un home
-    usage: /delhome <nom>
-  homes:
-    description: Lister ses homes
-    usage: /homes
-
-permissions:
-  faction.use:
-    description: Utiliser les commandes de faction
-    default: true
-  faction.admin:
-    description: Commandes admin — invsee, bypass coffres privés
-    default: op
+author: HeroCraft
+description: Synchronise les données de faction et les chunks explorés vers le site web.
+softdepend: [FactionPlugin]
