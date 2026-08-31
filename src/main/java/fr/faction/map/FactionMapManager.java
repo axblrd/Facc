@@ -105,7 +105,7 @@ public class FactionMapManager {
         FactionMapRenderer renderer = new FactionMapRenderer(
                 factionManager, this, player.getUniqueId(), world.getName());
         renderers.put(player.getUniqueId(), renderer);
-        mapView.addRenderer(renderer);
+        view.addRenderer(renderer);
 
         // Construire l'item carte
         @SuppressWarnings("deprecation")

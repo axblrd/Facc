@@ -1,6 +1,8 @@
 package fr.faction.web;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,8 +34,9 @@ public class LierCommand implements CommandExecutor {
         }
 
         if (!linkManager.isEnabled()) {
-            player.sendMessage(ChatColor.RED + "❌ Le système de liaison n'est pas configuré "
-                    + "(MySQL absent dans config.yml).");
+            player.sendMessage(ChatColor.RED + "❌ Le système de liaison n'est pas configuré.");
+            player.sendMessage(ChatColor.GRAY + "Vérifie la section §emysql:§7 dans "
+                    + "§eplugins/FactionPlugin/config.yml§7.");
             return true;
         }
 
@@ -42,76 +45,61 @@ public class LierCommand implements CommandExecutor {
             String webPseudo = linkManager.getLinkedWebPseudo(player.getUniqueId());
             if (webPseudo != null) {
                 player.sendMessage("");
-                player.sendMessage(ChatColor.GREEN + "✔ Ton compte Minecraft est lié au compte site "
-                        + ChatColor.YELLOW + webPseudo + ChatColor.GREEN + ".");
-                player.sendMessage(ChatColor.GRAY + "  Site : §b" + siteUrl + "/faction.html");
+                player.sendMessage(ChatColor.GREEN + "✔ Compte Minecraft lié au compte site : "
+                        + ChatColor.YELLOW + webPseudo);
+                player.sendMessage(ChatColor.GRAY + "  Carte : §b" + siteUrl + "/faction.html");
                 player.sendMessage("");
             } else {
-                player.sendMessage(ChatColor.YELLOW + "⚠ Ton compte Minecraft n'est pas encore lié. "
-                        + "Tape §e/lier §epour obtenir un code.");
+                player.sendMessage(ChatColor.YELLOW + "⚠ Pas encore lié. Tape §e/lier §epour obtenir un code.");
             }
             return true;
         }
 
-        // /lier → générer le code
-        player.sendMessage("");
-        player.sendMessage(ChatColor.GOLD + "⬡ " + ChatColor.YELLOW + ChatColor.BOLD
-                + "Liaison compte site web" + ChatColor.RESET);
-        player.sendMessage(ChatColor.GRAY + "Génération du code en cours…");
+        // /lier → générer le code (async pour ne pas bloquer le thread principal)
+        player.sendMessage(ChatColor.GRAY + "Génération du code…");
 
-        // Async pour ne pas bloquer le thread principal
-        org.bukkit.Bukkit.getScheduler().runTaskAsynchronously(
-            org.bukkit.Bukkit.getPluginManager().getPlugin("FactionPlugin"),
-            () -> {
-                String code = linkManager.generateCode(player.getUniqueId(), player.getName());
-                org.bukkit.Bukkit.getScheduler().runTask(
-                    org.bukkit.Bukkit.getPluginManager().getPlugin("FactionPlugin"),
-                    () -> {
-                        if (code == null) {
-                            player.sendMessage(ChatColor.RED + "❌ Impossible de générer un code "
-                                    + "(connexion MySQL perdue — contacte un admin).");
-                            return;
-                        }
+        Bukkit.getScheduler().runTaskAsynchronously(
+                Bukkit.getPluginManager().getPlugin("FactionPlugin"),
+                () -> {
+                    final String code = linkManager.generateCode(player.getUniqueId(), player.getName());
 
-                        player.sendMessage("");
-                        player.sendMessage(ChatColor.GREEN + "✔ Code généré :");
-                        player.sendMessage("");
+                    Bukkit.getScheduler().runTask(
+                            Bukkit.getPluginManager().getPlugin("FactionPlugin"),
+                            () -> {
+                                if (!player.isOnline()) return;
 
-                        // Afficher le code en grand, cliquable
-                        net.md_5.bungee.api.chat.TextComponent msg =
-                            new net.md_5.bungee.api.chat.TextComponent(
-                                "   " + ChatColor.YELLOW + ChatColor.BOLD + code
-                            );
-                        msg.setHoverEvent(new net.md_5.bungee.api.chat.HoverEvent(
-                            net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT,
-                            new net.md_5.bungee.api.chat.ComponentBuilder(
-                                "Clic pour copier le code").color(net.md_5.bungee.api.ChatColor.GRAY).create()
-                        ));
-                        msg.setClickEvent(new net.md_5.bungee.api.chat.ClickEvent(
-                            net.md_5.bungee.api.chat.ClickEvent.Action.COPY_TO_CLIPBOARD, code
-                        ));
-                        player.spigot().sendMessage(msg);
+                                if (code == null) {
+                                    player.sendMessage(ChatColor.RED + "❌ Impossible de générer un code.");
+                                    player.sendMessage(ChatColor.GRAY + "MySQL inaccessible — contacte un admin.");
+                                    return;
+                                }
 
-                        player.sendMessage("");
-                        player.sendMessage(ChatColor.GRAY + "Instructions :");
-                        player.sendMessage(ChatColor.WHITE + "  1. " + ChatColor.GRAY
-                                + "Va sur §b" + siteUrl + "/faction.html");
-                        player.sendMessage(ChatColor.WHITE + "  2. " + ChatColor.GRAY
-                                + "Connecte-toi (ou crée un compte)");
-                        player.sendMessage(ChatColor.WHITE + "  3. " + ChatColor.GRAY
-                                + "Entre le code §e" + code + " §7dans le champ de liaison");
-                        player.sendMessage(ChatColor.WHITE + "  4. " + ChatColor.GRAY
-                                + "Clique §b🔗 Lier le compte");
-                        player.sendMessage("");
-                        player.sendMessage(ChatColor.DARK_GRAY + "⏱ Ce code expire dans §710 minutes§8.");
-                        player.sendMessage(ChatColor.DARK_GRAY + "Tape §7/lier statut §8pour vérifier ton lien.");
-                        player.sendMessage("");
+                                String sep = ChatColor.DARK_GRAY + "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━";
+                                player.sendMessage(sep);
+                                player.sendMessage(ChatColor.GOLD + "⬡ " + ChatColor.YELLOW
+                                        + ChatColor.BOLD + "Liaison compte HeroCraft");
+                                player.sendMessage("");
+                                player.sendMessage(ChatColor.GRAY + "  Ton code : "
+                                        + ChatColor.YELLOW + ChatColor.BOLD + "  " + code + "  ");
+                                player.sendMessage("");
+                                player.sendMessage(ChatColor.WHITE + "  1. " + ChatColor.GRAY
+                                        + "Va sur §b" + siteUrl + "/faction.html");
+                                player.sendMessage(ChatColor.WHITE + "  2. " + ChatColor.GRAY
+                                        + "Connecte-toi (ou crée un compte)");
+                                player.sendMessage(ChatColor.WHITE + "  3. " + ChatColor.GRAY
+                                        + "Entre le code §e" + code + " §7dans le champ de liaison");
+                                player.sendMessage(ChatColor.WHITE + "  4. " + ChatColor.GRAY
+                                        + "Clique §b🔗 Lier le compte");
+                                player.sendMessage("");
+                                player.sendMessage(ChatColor.DARK_GRAY + "⏱ Expire dans 10 minutes. "
+                                        + "§8/lier statut §8pour vérifier.");
+                                player.sendMessage(sep);
 
-                        player.playSound(player.getLocation(),
-                            org.bukkit.Sound.BLOCK_NOTE_BLOCK_PLING, 0.8f, 1.5f);
-                    }
-                );
-            }
+                                player.playSound(player.getLocation(),
+                                        Sound.BLOCK_NOTE_BLOCK_PLING, 0.8f, 1.5f);
+                            }
+                    );
+                }
         );
 
         return true;

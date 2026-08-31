@@ -1,8 +1,32 @@
 # 🏰 FactionPlugin
 
-Plugin Minecraft complet de gestion de factions pour serveur **Paper/Spigot 1.21**.
+<div align="center">
 
-> Plugin tout-en-un combinant gestion de factions, statistiques joueurs, système de puissance, shop global, banque d'émeraudes, système de claims, commerce, guerre et bien plus encore !
+![Minecraft](https://img.shields.io/badge/Minecraft-1.21-00B200?style=for-the-badge&logo=minecraft)
+![Java](https://img.shields.io/badge/Java-21-F7A81D?style=for-the-badge&logo=openjdk)
+![Paper](https://img.shields.io/badge/Paper-Spigot-F7A81D?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
+**Plugin Minecraft complet de gestion de factions pour serveur Paper/Spigot 1.21**</div>
+
+---
+
+## 🚀 Présentation
+
+**FactionPlugin** est une solution tout-en-un pour gérer un serveur Minecraft PvP/Factions中型. Il combine gestion de factions, statistiques joueurs, système de puissance, shop global, banque d'émeraudes, système de claims, commerce entre joueurs, guerre et bien plus encore !
+
+Que vous dirigiez un serveur compétition ou un serveur survie, FactionPlugin vous offre tous les outils nécessaires pour créer une expérience de jeu captivante et structurée.
+
+### ✨ Fonctionnalités Principales
+
+| Catégorie | Fonctionnalités |
+|----------|-----------------|
+| ⚔️ **Combat & PvP** | Système de guerre complet avec conquêtes territoriales, inventaire partagé, sessions de combat |
+| 🏦 **Economie** | Banque d'émeraudes partagée, shop global multi-devises (fer, or, diamant, émeraude) |
+| 🗺️ **Territoire** | Claims de chunks, permissions par joueur, visualisation sur carte |
+| 📊 **Progression** | Système de puissance (PI/PG), 7 rangs (Pierre → Légendaire), effets passifs |
+| 🛒 **Commerce** | Echanges sécurisés entre joueurs, boutique mondiale avec recherche et tri |
+| 🏠 **Social** | Homes personnels, TPA, alliances entre factions, coffres privés |
 
 ## ✨ Fonctionnalités
 
@@ -137,14 +161,19 @@ fr.faction
 
 ## 📜 Historique des Versions
 
-### v5.7.2
-- Système de guerre complet avec conquêtes territoriales
-- Inventaire partagé pendant les combats
-- Tri de coffre avancé (type, rareté, alphabétique)
-- GUI principal redesigné
-- Commandes TPA améliorées avec cooldowns
+### v5.7.2 — Correction des Bugs
+> **Corrections importantes** dans cette version ! Si vous utilisiez une version antérieure, cette mise à jour est **fortement recommandée**.
+
+#### 🐛 Bugs Corrigés
+- **Correction des problèmes de téléportation (TPA/Home)** : Résolution des bugs lors des demandes de téléportation et de l'utilisation des homes
+- **Amélioration de la gestion des guerres** : Corrections mineures et optimisations du système de guerre
+- **Stabilité du système de claims** : Résolution des problèmes de permissions et de visualisation des territoires
+- **Optimisations générales** : Diverses améliorations de performance et corrections de bugs mineurs
+
+#### ✨ Améliorations Continues
+- Tri de coffre avancé toujours inclus (type, rareté, alphabétique)
+- GUI principal toujours aussi intuitif
 - Commandes Home enrichies avec auto-completion
-- Multiples corrections et optimisations
 
 ### Versions précédentes
 - **v5.5.0** : Système de guerre, tri de coffre, GUI principal + corrections

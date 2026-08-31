@@ -62,7 +62,16 @@ public class WebLinkManager {
         String url = "jdbc:mysql://" + host + ":" + port + "/" + database
                 + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8";
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            // Essayer le nouveau driver d'abord (mysql-connector-j 8+), puis l'ancien
+            try { Class.forName("com.mysql.cj.jdbc.Driver"); }
+            catch (ClassNotFoundException e1) {
+                try { Class.forName("com.mysql.jdbc.Driver"); }
+                catch (ClassNotFoundException e2) {
+                    log.severe("[WebLink] Driver MySQL introuvable. Assure-toi que mysql-connector-j"
+                            + " est dans le classpath ou que Paper 1.21 l'inclut.");
+                    return;
+                }
+            }
             connection = DriverManager.getConnection(url, user, password);
             ensureTable();
             enabled = true;

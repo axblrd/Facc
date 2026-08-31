@@ -52,7 +52,7 @@ public class FactionMapRenderer extends MapRenderer {
 
     // ── Couleurs MapPalette ───────────────────────────────────────────────────────
     // MapPalette.getColor() retourne l'index de la couleur la plus proche
-    private static final byte C_SELF_A   = mapColor(new Color(255, 255, 255));
+    private static final byte C_SELF_A   = mapColor(Color.white);
     private static final byte C_SELF_B   = mapColor(new Color(180, 180, 180));
     private static final byte C_MEMBER   = mapColor(new Color(0x00, 0xFF, 0x55));
     private static final byte C_ALLY     = mapColor(new Color(0xFF, 0xD7, 0x00));
@@ -277,6 +277,6 @@ public class FactionMapRenderer extends MapRenderer {
     /** Convertit une couleur Bukkit Color en index de palette MapPalette */
     @SuppressWarnings("deprecation")
     private static byte mapColor(Color color) {
-        return MapPalette.matchColor(new Color(color.getRed(), color.getGreen(), color.getBlue()));
+        return MapPalette.matchColor(color);
     }
 }

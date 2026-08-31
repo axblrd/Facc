@@ -9,9 +9,6 @@
     <version>5.7.2</version>
     <packaging>jar</packaging>
 
-    <name>FactionPlugin</name>
-    <description>Plugin de factions complet — Paper 1.21</description>
-
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
@@ -26,11 +23,21 @@
     </repositories>
 
     <dependencies>
-        <!-- Paper 1.21 — inclut Adventure API nativement -->
+        <!-- Paper 1.21 — inclut Adventure + BungeeCord chat API -->
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.21.4-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- MySQL Connector — nécessaire pour /lier (WebLinkManager) -->
+        <!-- Scope "provided" car Paper inclut déjà le driver MySQL en 1.21 -->
+        <!-- Si ce n'est pas le cas sur ta version, passe en "compile" + shade -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.0.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -48,6 +55,27 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals><goal>shade</goal></goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <!-- On n'embarque PAS le driver MySQL (déjà dans Paper) -->
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>com.mysql:*</exclude>
+                                    <exclude>io.papermc.paper:*</exclude>
+                                </excludes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
@@ -56,7 +84,6 @@
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                         </manifest>
                     </archive>
-                    <outputDirectory>${project.basedir}/target</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>
