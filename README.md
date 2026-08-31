@@ -1,182 +1,169 @@
-# FactionWebMap
+# 🏰 FactionPlugin
 
-Plugin Minecraft pour **Paper 1.21** qui synchronise les données de factions et l'exploration des joueurs vers un site web en temps réel.
+Plugin Minecraft complet de gestion de factions pour serveur **Paper/Spigot 1.21**.
 
-## 🎯 Description
-
-**FactionWebMap** est un pont entre votre serveur Minecraft et votre site web de faction. Il permet de :
-
-- 📍 **Tracker l'exploration** des joueurs en temps réel (chunks visités)
-- 🏰 **Synchroniser les données de factions** : membres, alliés, puissance, ranks
-- 🗺️ **Envoyer les claims** et les positions des homes vers le site web
-- 📊 **Transmettre les statistiques** des joueurs (kills, deaths, playtime)
-
-Ce plugin fonctionne en conjonction avec [FactionPlugin](https://github.com/axblrd/Facc) pour créer une expérience web immersive où les joueurs peuvent visualiser leur progression et celle de leur faction.
+> Plugin tout-en-un combinant gestion de factions, statistiques joueurs, système de puissance, shop global, banque d'émeraudes, système de claims, commerce, guerre et bien plus encore !
 
 ## ✨ Fonctionnalités
 
-### 🗺️ Tracking des Chunks Exploré
-- Détecte automatiquement les chunks visités par chaque joueur
-- Envoie les données par lots (configurable, défaut: 200 chunks/requête)
-- Support multi-mondes (configurable)
-- Flush automatique toutes les 30 secondes + flush à la déconnexion
-- Déduplication côté serveur (INSERT IGNORE)
+### ⚔️ Système de Guerre Complet
+- **Déclaration de guerre** entre factions avec système de sessions de combat
+- **Conquêtes de territoires** : Les factions victorieuses gagnent les claims ennemis
+- **Inventaire partagé en guerre** : Accès aux ressources communes pendant les combats
+- **Gestion structurée des participants** et des sessions de guerre
 
-### 🏰 Synchronisation des Factions
-- **Snapshot global** envoyé périodiquement (défaut: 60 secondes)
-- Inclut :
-  - Informations complètes des factions (nom, chef, rang, puissance)
-  - Liste des membres et alliés
-  - Position du spawn de faction
-  - Barycentre des claims (centre du territoire)
-  - Tous les claims avec leurs coordonnées
+### 🏦 Banque de Faction (Emerald Bank)
+- **Coffre partagé** : Déposez et retirez des émeraudes dans la banque de votre faction
+- **Interface GUI intuitive** pour gérer les dépôts/retraits
+- **Accès réservé aux membres autorisés**
+- **Historique des transactions**
 
-### 🏠 Homes de Faction
-- Synchronisation des points de téléportation des joueurs
-- Position en coordonnées de chunk pour optimisation web
+### 🗺️ Système de Claims
+- **Réclamez des chunks** pour protéger votre territoire
+- **Permissions par joueur** : Configurez qui peut construire/casser dans les zones réclamées
+- **Visualisation des claims** sur la carte
+- **GUI de gestion des permissions** intuitive
 
-### 📊 Statistiques Joueurs
-- Transmission des stats en temps réel :
-  - Faction actuelle
-  - Puissance individuelle
-  - Kills / Deaths
-  - Temps de jeu
+### 💱 Commerce Entre Joueurs (Trade)
+- **Échange sécurisé** d'items entre deux joueurs
+- **Interface GUI** avec slots pour proposer items et émeraudes
+- **Confirmation des deux parties** requise pour finaliser l'échange
+- **Protection contre les scams**
 
-### 🔒 Sécurité & Performance
-- Communication via API REST sécurisée (clé API)
-- Requêtes HTTP asynchrones (n'impacte pas le serveur)
-- Connexion timeout 5s, requête timeout 8s
-- Mode debug pour troubleshooting
+### 🛒 Shop Global (`/faction shop`)
+- **GUI paginé** pour parcourir toutes les annonces
+- **Recherche par mot-clé** dans le GUI
+- **Tri par prix** croissant ou décroissant
+- **4 devises acceptées** : Fer, Or, Diamant, Émeraude
+- **Paiement instantané** au vendeur
+
+### ⚡ Système de Puissance (Power System)
+- **Puissance Individuelle (PI)** : Générée basée sur les stats PvP, survie et activité
+- **Puissance Globale (PG)** : Somme des PI des membres + bonus de taille
+- **7 Rangs de Faction** : Pierre → Bronze → Argent → Or → Diamant → Emeraude → Légendaire
+- **Effets passifs** : Speed, force, résistance selon le rang
+
+### 📊 Statistiques Joueurs Intégrées
+- **`/faction stats [joueur]`** : Stats complètes (kills, mobs, dégâts, blocs, temps, K/D)
+- **`/faction classementjoueurs`** : Top 10 par catégorie
+
+### 🏠 Fonctionnalités de Base
+- **Création de factions** : `/faction create <nom>`
+- **Gestion des membres** : Invitez, expulsez, promouvez
+- **Système de téléportation (TPA)** : `/tpa`, `/tpaccept`, `/tpdeny`
+- **Homes personnels** : `/sethome`, `/home`, `/delhome`, `/homes`
+- **Inventaire partagé** : Coffre commun accessible à tous
+- **Interface GUI** : Menu complet avec `/faction`
+- **Alliances** entre factions
+- **Coffres privés** individuels
+- **InvSee** pour les admins (`/faction invsee <joueur>`)
+- **Liaison site web** : `/lier` pour connecter le compte Minecraft au site
+- **Classement factions** par puissance
+- **Tri de coffre** par type, rareté ou ordre alphabétique
+- **Map faction** interactive
 
 ## 🔧 Installation
 
 ### Prérequis
 - **Java 21**
 - **Maven 3.9+**
-- Paper 1.21 ou compatible
-- Un site web avec l'API appropriée
+- Paper/Spigot 1.21
 
 ### Compilation
 
 ```bash
+git clone https://github.com/axblrd/Facc.git
+cd Facc
 mvn clean package
 ```
 
-Le fichier JAR sera généré dans `target/FactionWebMap-1.1.0.jar`
+Le fichier JAR sera généré dans `target/FactionPlugin-5.7.2.jar`
 
-### Configuration
+### Installation rapide
+1. Téléchargez la dernière version depuis la [page des releases](../../releases)
+2. Placez `FactionPlugin-X.X.X.jar` dans le dossier `plugins` de votre serveur
+3. Redémarrez votre serveur
+4. Le fichier de configuration sera généré automatiquement dans `plugins/FactionPlugin/`
 
-1. Placez `FactionWebMap-1.1.0.jar` dans le dossier `plugins` de votre serveur
-2. Redémarrez le serveur
-3. Modifiez `plugins/FactionWebMap/config.yml` :
+## 📡 Commandes Principales
 
-```yaml
-# URL de votre site web
-site-url: "https://votre-site.com"
+| Commande | Description |
+|----------|-------------|
+| `/faction` | Menu principal |
+| `/faction create <nom>` | Créer une faction |
+| `/faction info` | Informations de votre faction |
+| `/faction invite <joueur>` | Inviter un joueur |
+| `/faction leave` | Quitter votre faction |
+| `/faction stats [joueur]` | Statistiques d'un joueur |
+| `/faction classementjoueurs` | Top 10 joueurs |
+| `/faction shop` | Ouvrir le shop global |
+| `/faction vendre <prix> <monnaie>` | Mettre un item en vente |
+| `/faction shop <joueur>` | Voir l'inventaire d'un joueur (admin) |
+| `/tpa <joueur>` | Demander une téléportation |
+| `/tpaccept` / `/tpdeny` | Accepter/refuser un TPA |
+| `/sethome [nom]` | Définir un home |
+| `/home [nom]` | Se téléporter à un home |
+| `/lier` | Lier le compte au site web |
 
-# Clé API (doit correspondre à FACTION_API_KEY dans .env du site)
-api-key: "votre-cle-secrete"
+## 🔑 Permissions
 
-# Intervalle d'envoi des snapshots (en ticks, 1200 = 60 secondes)
-push-interval-ticks: 1200
+| Permission | Description |
+|------------|-------------|
+| `faction.use` | Utiliser les commandes de base (par défaut: tous) |
+| `faction.admin` | Commandes admin - InvSee, bypass (par défaut: ops) |
 
-# Nombre max de chunks par requête
-chunk-batch-size: 200
-
-# Worlds à tracker
-worlds-tracked:
-  - world
-
-# Mode debug (affiche les requêtes dans la console)
-debug: false
-```
-
-## 🔌 Dépendance avec FactionPlugin
-
-Ce plugin est conçu pour fonctionner **avec** [FactionPlugin](https://github.com/axblrd/Facc), mais peut tourner **seul** :
-
-| Scénario | Comportement |
-|----------|--------------|
-| **FactionPlugin installé** | ✅ Toutes les fonctionnalités actives |
-| **FactionPlugin non installé** | ⚠️ Snapshot désactivé, chunks & stats envoyés |
-
-## 📡 API Web
-
-Le plugin communique avec les endpoints suivants :
-
-| Endpoint | Méthode | Description |
-|----------|---------|-------------|
-| `/api/faction/push/chunks` | POST | Envoyer les chunks explorés |
-| `/api/faction/push/snapshot` | POST | Envoyer le snapshot des factions |
-| `/api/faction/push/stats` | POST | Envoyer les stats des joueurs |
-
-**Headers requis :**
-- `Content-Type: application/json`
-- `X-Faction-Key: <api-key>`
-
-## 🛠️ Développement
-
-### Architecture
+## 🏗️ Architecture
 
 ```
-FactionWebMapPlugin
-├── WebMapAPI          # Client HTTP léger (java.net.http)
-├── ChunkTracker       # Listener des événements de mouvement
-└── SnapshotPusher     # Collecte et envoie les données
-```
-
-### API Endpoints Attendus
-
-Le site web doit implémenter ces endpoints pour recevoir les données :
-
-```javascript
-// POST /api/faction/push/chunks
-{
-  "uuid": "player-uuid",
-  "pseudo": "PlayerName",
-  "world": "world",
-  "chunks": [{"cx": 100, "cz": -50}, ...]
-}
-
-// POST /api/faction/push/snapshot
-{
-  "factions": [
-    {
-      "name": "FactionName",
-      "chef": "chef-uuid",
-      "rank": "Diamant",
-      "power": 1500.5,
-      "members": ["uuid1", "uuid2"],
-      "allies": ["AlliedFaction"],
-      "spawnCx": 100, "spawnCz": -50,
-      "centerCx": 120, "centerCz": -45
-    }
-  ],
-  "claims": [
-    {"faction": "FactionName", "cx": 100, "cz": -50, "world": "world"}
-  ],
-  "homes": [
-    {"uuid": "uuid", "name": "home1", "cx": 100, "cz": -50, "world": "world"}
-  ]
-}
-
-// POST /api/faction/push/stats
-{
-  "uuid": "player-uuid",
-  "pseudo": "PlayerName",
-  "faction": "FactionName",
-  "power": 25.5,
-  "kills": 42,
-  "deaths": 15,
-  "playtimeMs": 7200000
-}
+fr.faction
+├── FactionPlugin.java          # Classe principale
+├── alliance/                   # Système d'alliance et homes
+├── claim/                      # Gestion des claims et permissions
+├── commands/                   # Commandes (/faction, /power)
+├── economy/                    # Banque d'émeraudes
+├── gui/                        # Interfaces GUI
+├── listeners/                  # Event listeners
+├── managers/                   # Gestionnaires (faction, stats, etc.)
+├── map/                       # Carte des factions
+├── models/                    # Modèles de données
+├── power/                     # Système de puissance
+├── shop/                      # Boutique globale
+├── sort/                      # Tri de coffre
+├── trade/                     # Commerce entre joueurs
+├── war/                       # Système de guerre
+├── web/                       # Liaison site web
+└── util/                      # Utilitaires
 ```
 
 ## 📜 Historique des Versions
 
-- **v1.1.0** : Amélioration du système de snapshot et optimisations
-- **v1.0.0** : Version initiale - Tracking des chunks, snapshot factions, stats joueurs
+### v5.7.2
+- Système de guerre complet avec conquêtes territoriales
+- Inventaire partagé pendant les combats
+- Tri de coffre avancé (type, rareté, alphabétique)
+- GUI principal redesigné
+- Commandes TPA améliorées avec cooldowns
+- Commandes Home enrichies avec auto-completion
+- Multiples corrections et optimisations
+
+### Versions précédentes
+- **v5.5.0** : Système de guerre, tri de coffre, GUI principal + corrections
+- **v5.4.1** : Optimisations et corrections de bugs
+- **v5.4.0** : Shop Global paginé + InvSee admin
+- **v4.0.0** : Refonte complète de la boutique + InvSee
+- v3.2.4 : Claim, Banque émeraudes, Troc, Stats, Classements, Puissance
+- v3.1.0 : Stats joueurs intégrées + Classement
+- v2.0.0 : Système de Puissance et Rangs
+- v1.0.0 : Version initiale
+
+## 🔗 Intégration Web
+
+Ce plugin est conçu pour fonctionner avec **[FactionWebMap](https://github.com/axblrd/Facc)** — un plugin complémentaire qui synchronise les données de factions et l'exploration des joueurs vers un site web en temps réel.
 
 ## 📄 License
 
 Ce projet est sous licence MIT.
+
+---
+
+⭐ N'hésitez pas à laisser une étoile si ce plugin vous est utile !
