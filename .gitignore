@@ -1,14 +1,4 @@
-# Maven
 target/
-
-# IDE
-.idea/
-*.iml
-.vscode/
-.settings/
-.project
-.classpath
-
-# OS
-.DS_Store
-Thumbs.db
+releases/
+*.class
+*.jar
