@@ -13,7 +13,9 @@
 
 ## 🚀 Présentation
 
-**FactionPlugin** est une solution tout-en-un pour gérer un serveur Minecraft PvP/Factions中型. Il combine gestion de factions, statistiques joueurs, système de puissance, shop global, banque d'émeraudes, système de claims, commerce entre joueurs, guerre et bien plus encore !
+**FactionPlugin** est une solution tout-en-un pour gérer un serveur Minecraft PvP/Factions. Il combine gestion de factions, statistiques joueurs, système de puissance, shop global, banque d'émeraudes, système de claims, commerce entre joueurs, guerre et bien plus encore !
+
+✨ **NOUVEAU dans la v5.8.0** : Intégration complète avec **FactionSite v2** — un site web moderne pour visualiser les classements, explorer les factions et synchroniser les données en temps réel !
 
 Que vous dirigiez un serveur compétition ou un serveur survie, FactionPlugin vous offre tous les outils nécessaires pour créer une expérience de jeu captivante et structurée.
 
@@ -21,12 +23,13 @@ Que vous dirigiez un serveur compétition ou un serveur survie, FactionPlugin vo
 
 | Catégorie | Fonctionnalités |
 |----------|-----------------|
-| ⚔️ **Combat & PvP** | Système de guerre complet avec conquêtes territoriales, inventaire partagé, sessions de combat |
+| ⚔️ **Combat & PvP** | Système de guerre complet avec conquêtes territoriales, inventaire partagé, sessions de combat, mode Arène |
 | 🏦 **Economie** | Banque d'émeraudes partagée, shop global multi-devises (fer, or, diamant, émeraude) |
 | 🗺️ **Territoire** | Claims de chunks, permissions par joueur, visualisation sur carte |
 | 📊 **Progression** | Système de puissance (PI/PG), 7 rangs (Pierre → Légendaire), effets passifs |
 | 🛒 **Commerce** | Echanges sécurisés entre joueurs, boutique mondiale avec recherche et tri |
 | 🏠 **Social** | Homes personnels, TPA, alliances entre factions, coffres privés |
+| 🌐 **Site Web** | FactionSite v2 intégré — classements, carte interactive, profils de factions, synchronisation temps réel |
 
 ## ✨ Fonctionnalités
 
@@ -35,6 +38,35 @@ Que vous dirigiez un serveur compétition ou un serveur survie, FactionPlugin vo
 - **Conquêtes de territoires** : Les factions victorieuses gagnent les claims ennemis
 - **Inventaire partagé en guerre** : Accès aux ressources communes pendant les combats
 - **Gestion structurée des participants** et des sessions de guerre
+- **Mode Arène** : Arènes de combat dédiées avec matchmaking et stats détaillées
+
+### 🌐 FactionSite v2 — Interface Web (NOUVEAU !)
+
+**FactionSite v2** est un site web moderne qui complète parfaitement le plugin !
+
+- **🌟 Interface utilisateur moderne** : Design épuré et responsive pour une expérience optimale
+- **📊 Tableaux de bord en temps réel** : Statistiques des joueurs et des factions toujours à jour
+- **🗺️ Carte interactive** : Visualisez les territoires des factions directement depuis le navigateur
+- **🏰 Profils de factions** : Pages détaillées avec historique, membres, et stats
+- **⚔️ Mode Arène** : Participez à des combats compétitifs et consultez les classements
+- **🔄 Synchronisation bidirectionnelle** : Les données circulent seamlessly entre le serveur et le site
+
+#### Installation du Site Web
+```bash
+# Extraire le fichier FactionSite-v2.zip
+unzip FactionSite-v2.zip
+cd mc-site-faction
+
+# Installer les dépendances
+npm install
+
+# Configurer (.env)
+cp .env.example .env
+# Modifier les paramètres selon votre serveur
+
+# Lancer le serveur
+npm start
+```
 
 ### 🏦 Banque de Faction (Emerald Bank)
 - **Coffre partagé** : Déposez et retirez des émeraudes dans la banque de votre faction
@@ -101,7 +133,7 @@ cd Facc
 mvn clean package
 ```
 
-Le fichier JAR sera généré dans `target/FactionPlugin-5.7.2.jar`
+Le fichier JAR sera généré dans `target/FactionPlugin-5.8.0.jar`
 
 ### Installation rapide
 1. Téléchargez la dernière version depuis la [page des releases](../../releases)
@@ -161,19 +193,34 @@ fr.faction
 
 ## 📜 Historique des Versions
 
+### v5.8.0 — Site Web FactionSite v2 & Améliorations Majeures ✨
+> **Version majeure** avec intégration complète du site web FactionSite v2 !
+
+#### 🌐 FactionSite v2 — NOUVEAU
+- **Interface web moderne** : Design responsive et attractif
+- **Classements en temps réel** : Statistiques joueur et faction toujours à jour
+- **Carte interactive** : Visualisez les territoires des factions sur le web
+- **Profils de factions** : Pages détaillées avec historique et membres
+- **Mode Arène** : Système de combat compétitif avec matchmaking
+- **Synchronisation bidirectionnelle** : Données en temps réel entre serveur et site
+
+#### ⚔️ Mode Arène
+- Arènes de combat dédiées
+- Système de matchmaking
+- Statistiques de session détaillées
+
+#### 🔧 Améliorations Techniques
+- Optimisation des requêtes base de données
+- Mise en cache améliorée pour les classements
+- Sécurité renforcée
+- Stabilité générale améliorée
+
+#### 🐛 Corrections
+- Corrections de bugs TPA/Home
+- Résolution de problèmes de visualisation claims
+- Amélioration des performances GUI
+
 ### v5.7.2 — Correction des Bugs
-> **Corrections importantes** dans cette version ! Si vous utilisiez une version antérieure, cette mise à jour est **fortement recommandée**.
-
-#### 🐛 Bugs Corrigés
-- **Correction des problèmes de téléportation (TPA/Home)** : Résolution des bugs lors des demandes de téléportation et de l'utilisation des homes
-- **Amélioration de la gestion des guerres** : Corrections mineures et optimisations du système de guerre
-- **Stabilité du système de claims** : Résolution des problèmes de permissions et de visualisation des territoires
-- **Optimisations générales** : Diverses améliorations de performance et corrections de bugs mineurs
-
-#### ✨ Améliorations Continues
-- Tri de coffre avancé toujours inclus (type, rareté, alphabétique)
-- GUI principal toujours aussi intuitif
-- Commandes Home enrichies avec auto-completion
 
 ### Versions précédentes
 - **v5.5.0** : Système de guerre, tri de coffre, GUI principal + corrections
