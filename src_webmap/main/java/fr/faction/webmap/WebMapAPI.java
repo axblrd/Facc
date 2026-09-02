@@ -75,6 +75,22 @@ public class WebMapAPI {
 
     // ── HTTP ─────────────────────────────────────────────────────────────────────
 
+    // ── Position joueurs ─────────────────────────────────────────────────────────
+
+    public boolean pushPositions(java.util.List<java.util.Map<String, Object>> positions) {
+        return post("/api/faction/push/positions", java.util.Map.of("positions", positions));
+    }
+
+    public boolean pushPosition(String uuid, String pseudo,
+                                 Double x, Double y, Double z, boolean online) {
+        java.util.Map<String, Object> body = new java.util.HashMap<>();
+        body.put("uuid",   uuid);
+        body.put("pseudo", pseudo);
+        body.put("online", online);
+        if (x != null) { body.put("x", x); body.put("y", y); body.put("z", z); }
+        return post("/api/faction/push/position", body);
+    }
+
     private boolean post(String path, Object body) {
         try {
             String json = GSON.toJson(body);
