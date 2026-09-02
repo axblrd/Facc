@@ -1,0 +1,7 @@
+site-url: "http://localhost:3000"
+api-key: "change-moi"
+push-interval-ticks: 1200
+chunk-batch-size: 200
+worlds-tracked:
+  - world
+debug: false

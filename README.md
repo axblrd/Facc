@@ -1,4 +1,4 @@
-# 🏰 FactionPlugin
+# 🏰 FactionSystem — Système Complet de Factions pour Minecraft
 
 <div align="center">
 
@@ -7,17 +7,69 @@
 ![Paper](https://img.shields.io/badge/Paper-Spigot-F7A81D?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-**Plugin Minecraft complet de gestion de factions pour serveur Paper/Spigot 1.21**</div>
+**Système complet de factions avec synchronisation web en temps réel pour serveur Paper/Spigot 1.21**
+
+</div>
 
 ---
 
 ## 🚀 Présentation
 
-**FactionPlugin** est une solution tout-en-un pour gérer un serveur Minecraft PvP/Factions. Il combine gestion de factions, statistiques joueurs, système de puissance, shop global, banque d'émeraudes, système de claims, commerce entre joueurs, guerre et bien plus encore !
+**FactionSystem** est une solution tout-en-un pour gérer un serveur Minecraft PvP/Factions. Il combine :
 
-✨ **NOUVEAU dans la v5.8.0** : Intégration complète avec **FactionSite v2** — un site web moderne pour visualiser les classements, explorer les factions et synchroniser les données en temps réel !
+- 🎮 **FactionPlugin** : Gestion complète de factions avec guerre, économie et stats
+- 🗺️ **FactionWebMap** : Synchronisation des territoires et données vers un site web
 
-Que vous dirigiez un serveur compétition ou un serveur survie, FactionPlugin vous offre tous les outils nécessaires pour créer une expérience de jeu captivante et structurée.
+Que vous dirigiez un serveur compétition ou un serveur survie, FactionSystem vous offre tous les outils nécessaires pour créer une expérience de jeu captivante et structurée.
+
+---
+
+## 🗺️ FactionWebMap — NOUVEAU ! (v1.0.0)
+
+**FactionWebMap** est un plugin complémentaire qui synchronise les données de factions et l'exploration des joueurs vers un site web en temps réel.
+
+### ✨ Fonctionnalités
+
+| Fonctionnalité | Description |
+|-----------------|-------------|
+| 📍 **Suivi des Chunks** | Tracker automatiquement les chunks visités par chaque joueur |
+| 🏰 **Snapshot des Factions** | Envoyer un snapshot complet des données de faction toutes les 60 secondes |
+| 📊 **Statistiques Joueurs** | Synchroniser les stats individuelles des joueurs |
+| 🌐 **Intégration Web** | Connexion transparente avec le site web FactionSite |
+| ⚙️ **Configuration Flexible** | Intervalle de push et taille des lots configurable |
+| 🐛 **Mode Debug** | Option de débogage pour faciliter le dépannage |
+
+### 🔧 Installation Rapide
+
+```bash
+# Compilation
+mvn -f pom_webmap.xml clean package
+
+# Le fichier JAR sera dans target/FactionWebMap-1.0.0.jar
+```
+
+1. Placez `FactionWebMap-1.0.0.jar` dans le dossier `plugins` de votre serveur
+2. **SoftDepend** de `FactionPlugin` (optionnel mais recommandé)
+3. Redémarrez le serveur
+4. Modifiez `plugins/FactionWebMap/config.yml` avec l'URL de votre site et votre clé API
+
+### ⚙️ Configuration
+
+```yaml
+site-url: "http://localhost:3000"
+api-key: "votre-cle-api"
+push-interval-ticks: 1200  # 60 secondes
+chunk-batch-size: 200      # chunks par envoi
+worlds-tracked:
+  - world
+debug: false
+```
+
+---
+
+## 🎮 FactionPlugin — Plugin Principal
+
+✨ **Version 5.8.0** : Système complet de gestion de factions avec guerre, commerce et statistiques.
 
 ### ✨ Fonctionnalités Principales
 
@@ -29,9 +81,30 @@ Que vous dirigiez un serveur compétition ou un serveur survie, FactionPlugin vo
 | 📊 **Progression** | Système de puissance (PI/PG), 7 rangs (Pierre → Légendaire), effets passifs |
 | 🛒 **Commerce** | Echanges sécurisés entre joueurs, boutique mondiale avec recherche et tri |
 | 🏠 **Social** | Homes personnels, TPA, alliances entre factions, coffres privés |
-| 🌐 **Site Web** | FactionSite v2 intégré — classements, carte interactive, profils de factions, synchronisation temps réel |
+| 🌐 **Site Web** | FactionSite v2 intégré — classements, carte interactive, profils de factions |
 
-## ✨ Fonctionnalités
+---
+
+## 📦 Installation
+
+### Prérequis
+- **Java 21**
+- **Maven 3.9+**
+- Paper/Spigot 1.21
+
+### Compilation
+
+#### FactionPlugin (plugin principal)
+```bash
+mvn -f pom.xml clean package
+# JAR: target/FactionPlugin-5.8.0.jar
+```
+
+#### FactionWebMap (synchronisation web)
+```bash
+mvn -f pom_webmap.xml clean package
+# JAR: target/FactionWebMap-1.0.0.jar
+```
 
 ### ⚔️ Système de Guerre Complet
 - **Déclaration de guerre** entre factions avec système de sessions de combat

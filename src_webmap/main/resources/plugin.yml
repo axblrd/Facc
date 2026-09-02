@@ -1,0 +1,7 @@
+name: FactionWebMap
+version: 1.0.0
+main: fr.faction.webmap.FactionWebMapPlugin
+api-version: "1.21"
+author: HeroCraft
+description: Synchronise les données de faction et les chunks explorés vers le site web.
+softdepend: [FactionPlugin]
