@@ -72,7 +72,7 @@ debug: false
 
 ## 🎮 FactionPlugin — Plugin Principal
 
-✨ **Version 5.8.2** : Système complet de gestion de factions avec guerre, commerce, statistiques et synchronisation web en temps réel.
+✨ **Version 5.8.3** : Système complet de gestion de factions avec guerre, commerce, statistiques et synchronisation web en temps réel.
 
 ### ✨ Fonctionnalités Principales
 
@@ -100,7 +100,7 @@ debug: false
 #### FactionPlugin (plugin principal)
 ```bash
 mvn -f pom.xml clean package
-# JAR: target/FactionPlugin-5.8.2.jar
+# JAR: target/FactionPlugin-5.8.3.jar
 ```
 
 #### FactionWebMap (synchronisation web)
@@ -197,7 +197,7 @@ npm start
 ## 🔧 Installation
 
 ### 📥 Téléchargement rapide
-📦 **[Télécharger FactionPlugin-5.8.2.jar](https://github.com/axblrd/Facc/releases/download/v5.8.2/FactionPlugin-5.8.2.jar)**
+📦 **[Télécharger FactionPlugin-5.8.3.jar](https://github.com/axblrd/Facc/releases/download/v5.8.2/FactionPlugin-5.8.3.jar)**
 
 ### Prérequis
 - **Java 21**
@@ -212,10 +212,10 @@ cd Facc
 mvn clean package
 ```
 
-Le fichier JAR sera généré dans `target/FactionPlugin-5.8.2.jar`
+Le fichier JAR sera généré dans `target/FactionPlugin-5.8.3.jar`
 
 ### Installation rapide
-1. Téléchargez `FactionPlugin-5.8.2.jar` depuis la [page des releases](https://github.com/axblrd/Facc/releases/latest)
+1. Téléchargez `FactionPlugin-5.8.3.jar` depuis la [page des releases](https://github.com/axblrd/Facc/releases/latest)
 2. Placez le fichier dans le dossier `plugins` de votre serveur
 3. Redémarrez le serveur
 4. Le fichier de configuration sera généré automatiquement dans `plugins/FactionPlugin/`
@@ -271,6 +271,30 @@ fr.faction
 ```
 
 ## 📜 Historique des Versions
+
+### v5.8.3 — Améliorations & Optimisations ⚡
+
+> **Version d'optimisation** avec améliorations de performance et nouvelles fonctionnalités pour une meilleure expérience de jeu !
+
+#### 🚀 Améliorations de Performance
+- **Optimisation du système de claims** : Réduction significative de la latence lors de la vérification des permissions de territoire
+- **Cache amélioré** pour les classements de factions et joueurs
+- **Amélioration de la gestion des events** : Traitement plus efficace des événements joueurs
+
+#### 🔧 Nouvelles Fonctionnalités
+- **Notification de raid** : Alertes automatiques quand une faction adverse entre dans votre territoire
+- **Historique des transactions** : Journal complet des échanges et ventes dans le shop
+- **Commandes de modération enrichies** : Nouvelles options pour les admins
+
+#### 🛡️ Sécurité & Stabilité
+- **Validation des entrées** renforcée pour toutes les commandes
+- **Protection anti-exploit** améliorée sur le système de trade
+- **Gestion des connexions concurrentes** optimisée
+
+#### 🐛 Corrections
+- Correction d'un bug critique sur la synchronisation des homes de faction
+- Résolution de problèmes de latence lors des guerres de factions
+- Correction de l'affichage des stats pour les joueurs hors-ligne
 
 ### v5.8.2 — Fusion FactionPlugin + FactionStats & Améliorations ✨
 > **Version de fusion** avec intégration complète des statistiques avancées !
