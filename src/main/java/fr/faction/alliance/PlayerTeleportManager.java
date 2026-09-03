@@ -1,8 +1,11 @@
 package fr.faction.alliance;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
@@ -23,7 +26,7 @@ public class PlayerTeleportManager {
     private static final int WARMUP_SECONDS  = 3;
     private static final int COOLDOWN_SECONDS = 60;
 
-    private final JavaPlugin plugin;
+    private final Plugin plugin;
 
     // requester UUID → target UUID
     private final Map<UUID, UUID>  pendingRequests = new HashMap<>();
@@ -32,7 +35,7 @@ public class PlayerTeleportManager {
     // cooldowns : UUID → fin (ms)
     private final Map<UUID, Long>  cooldowns       = new HashMap<>();
 
-    public PlayerTeleportManager(JavaPlugin plugin) {
+    public PlayerTeleportManager(Plugin plugin) {
         this.plugin = plugin;
     }
 

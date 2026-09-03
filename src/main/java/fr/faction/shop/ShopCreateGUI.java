@@ -1,5 +1,6 @@
 package fr.faction.shop;
 
+import fr.faction.FactionPlugin;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -215,7 +216,7 @@ public class ShopCreateGUI implements Listener {
             ItemMeta cm = ci_item.getItemMeta();
             if (cm != null) {
                 cm.setDisplayName((sel ? "§a§l✔ " : (isCurr ? "§7" : "§8")) + curs[ci].getDisplayName());
-                if (sel) cm.addEnchant(org.bukkit.enchantments.Enchantment.UNBREAKING, 1, true);
+                if (sel) cm.addEnchant(org.bukkit.enchantments.Enchantment.SOUL_SPEED, 1, true);
                 cm.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS,
                         org.bukkit.inventory.ItemFlag.HIDE_ATTRIBUTES);
                 cm.setLore(Collections.singletonList(sel ? "§a✔ Sélectionné" : (isCurr ? "§7Clic pour choisir" : "§8Activer Mode Monnaie")));
@@ -447,7 +448,7 @@ public class ShopCreateGUI implements Listener {
         if (active) {
             ItemMeta m = is.getItemMeta();
             if (m != null) {
-                m.addEnchant(org.bukkit.enchantments.Enchantment.UNBREAKING, 1, true);
+                m.addEnchant(org.bukkit.enchantments.Enchantment.SOUL_SPEED, 1, true);
                 m.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
                 is.setItemMeta(m);
             }

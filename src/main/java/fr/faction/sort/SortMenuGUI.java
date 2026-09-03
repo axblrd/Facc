@@ -1,5 +1,6 @@
 package fr.faction.sort;
 
+import fr.faction.FactionPlugin;
 import fr.faction.managers.FactionManager;
 import fr.faction.managers.SharedInventoryManager;
 import org.bukkit.*;
