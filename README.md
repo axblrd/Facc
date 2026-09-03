@@ -6,8 +6,11 @@
 ![Java](https://img.shields.io/badge/Java-21-F7A81D?style=for-the-badge&logo=openjdk)
 ![Paper](https://img.shields.io/badge/Paper-Spigot-F7A81D?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![Release](https://img.shields.io/github/v/release/axblrd/Facc?style=for-the-badge)
 
 **Système complet de factions avec synchronisation web en temps réel pour serveur Paper/Spigot 1.21**
+
+📦 **[Télécharger la dernière version](https://github.com/axblrd/Facc/releases/latest)**
 
 </div>
 
@@ -69,7 +72,7 @@ debug: false
 
 ## 🎮 FactionPlugin — Plugin Principal
 
-✨ **Version 5.8.2** : Système complet de gestion de factions avec guerre, commerce et statistiques.
+✨ **Version 5.8.2** : Système complet de gestion de factions avec guerre, commerce, statistiques et synchronisation web en temps réel.
 
 ### ✨ Fonctionnalités Principales
 
@@ -193,12 +196,15 @@ npm start
 
 ## 🔧 Installation
 
+### 📥 Téléchargement rapide
+📦 **[Télécharger FactionPlugin-5.8.2.jar](https://github.com/axblrd/Facc/releases/download/v5.8.2/FactionPlugin-5.8.2.jar)**
+
 ### Prérequis
 - **Java 21**
 - **Maven 3.9+**
 - Paper/Spigot 1.21
 
-### Compilation
+### Compilation depuis les sources
 
 ```bash
 git clone https://github.com/axblrd/Facc.git
@@ -209,9 +215,9 @@ mvn clean package
 Le fichier JAR sera généré dans `target/FactionPlugin-5.8.2.jar`
 
 ### Installation rapide
-1. Téléchargez la dernière version depuis la [page des releases](../../releases)
-2. Placez `FactionPlugin-X.X.X.jar` dans le dossier `plugins` de votre serveur
-3. Redémarrez votre serveur
+1. Téléchargez `FactionPlugin-5.8.2.jar` depuis la [page des releases](https://github.com/axblrd/Facc/releases/latest)
+2. Placez le fichier dans le dossier `plugins` de votre serveur
+3. Redémarrez le serveur
 4. Le fichier de configuration sera généré automatiquement dans `plugins/FactionPlugin/`
 
 ## 📡 Commandes Principales
