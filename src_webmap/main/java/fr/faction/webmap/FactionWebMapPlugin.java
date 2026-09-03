@@ -35,8 +35,11 @@ public class FactionWebMapPlugin extends JavaPlugin {
         chunkTracker    = new ChunkTracker(this, api);
         snapshotPusher  = new SnapshotPusher(this, api);
 
-        // Enregistrer le listener de chunks
+        // Enregistrer les listeners
         getServer().getPluginManager().registerEvents(chunkTracker, this);
+
+        PositionTracker positionTracker = new PositionTracker(this, api);
+        getServer().getPluginManager().registerEvents(positionTracker, this);
 
         // Tâche snapshot + stats toutes les N ticks (défaut 1200 = 60s)
         int interval = getConfig().getInt("push-interval-ticks", 1200);

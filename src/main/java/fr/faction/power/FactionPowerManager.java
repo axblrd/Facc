@@ -194,21 +194,21 @@ public class FactionPowerManager {
             case LEGENDAIRE -> {
                 effect(player, PotionEffectType.HASTE,             2, ambient, particles);
                 effect(player, PotionEffectType.REGENERATION,      1, ambient, particles);
-                effect(player, PotionEffectType.STRENGTH,          0, ambient, particles);
-                effect(player, PotionEffectType.RESISTANCE,        1, ambient, particles);
+                effect(player, PotionEffectType.STRENGTH,   0, ambient, particles);
+                effect(player, PotionEffectType.RESISTANCE, 1, ambient, particles);
                 applyAllyAura(player, faction);
             }
             case EMERAUDE -> {
                 effect(player, PotionEffectType.HASTE,             2, ambient, particles);
                 effect(player, PotionEffectType.REGENERATION,      1, ambient, particles);
-                effect(player, PotionEffectType.STRENGTH,          0, ambient, particles);
-                effect(player, PotionEffectType.RESISTANCE,        1, ambient, particles);
+                effect(player, PotionEffectType.STRENGTH,   0, ambient, particles);
+                effect(player, PotionEffectType.RESISTANCE, 1, ambient, particles);
             }
             case DIAMANT -> {
                 effect(player, PotionEffectType.HASTE,             1, ambient, particles);
                 effect(player, PotionEffectType.REGENERATION,      0, ambient, particles);
                 effect(player, PotionEffectType.SLOW_FALLING,      0, ambient, particles);
-                effect(player, PotionEffectType.RESISTANCE,        0, ambient, particles);
+                effect(player, PotionEffectType.RESISTANCE, 0, ambient, particles);
             }
             case OR -> {
                 effect(player, PotionEffectType.HASTE,        1, ambient, particles);

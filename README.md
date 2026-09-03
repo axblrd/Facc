@@ -18,28 +18,71 @@
 **FactionSystem** est une solution tout-en-un pour gérer un serveur Minecraft PvP/Factions. Il combine :
 
 - 🎮 **FactionPlugin** : Gestion complète de factions avec guerre, économie et stats
-- 🗺️ **FactionWebMap** : Synchronisation des territoires et données vers un site web
+- 🗺️ **FactionWebMap** : Synchronisation des territoires et données vers un site web en temps réel
 
 Que vous dirigiez un serveur compétition ou un serveur survie, FactionSystem vous offre tous les outils nécessaires pour créer une expérience de jeu captivante et structurée.
 
 ---
 
-## 🗺️ FactionWebMap — NOUVEAU ! (v1.0.0)
+## 🎮 FactionPlugin — v5.8.0 🆕
 
-**FactionWebMap** est un plugin complémentaire qui synchronise les données de factions et l'exploration des joueurs vers un site web en temps réel.
+**FactionPlugin** est le cœur du système de factions, offrant une expérience complète et immersive pour vos serveurs Minecraft.
+
+### ✨ Fonctionnalités
+
+| Catégorie | Fonctionnalités |
+|-----------|----------------|
+| 🏰 **Factions** | Création, gestion, invitations, promotions, alliances |
+| 🗺️ **Claims** | Système de claim de territoire avec permissions |
+| ⚔️ **Guerre** | Système de guerre entre factions avec sessions |
+| 💰 **Économie** | Banque de faction, échanges, shop global |
+| 🏠 **Homes** | Homes personnels et de faction, téléportations |
+| 📊 **Stats** | Classements, statistiques détaillées des joueurs |
+| 🛒 **Boutique** | Shop global avec recherche et pagination |
+| 🗄️ **Inventaires** | Coffres partagés, tri d'inventaire, InvSee |
+| 🗺️ **Map** | Mini-map interactive des territoires |
+| 🔗 **Web** | Liaison compte web, synchronisation en temps réel |
+
+### 🎯 Commandes Principales
+
+| Commande | Description |
+|----------|-------------|
+| `/faction` | Commande principale des factions |
+| `/faction shop` | Boutique globale |
+| `/faction stats [joueur]` | Statistiques détaillées |
+| `/faction classements` | Classement des factions |
+| `/faction classementjoueurs` | Top 10 des joueurs |
+| `/lier` | Lier son compte Minecraft au site web |
+
+### 🔧 Installation
+
+1. Téléchargez le fichier `FactionPlugin-5.8.0.jar`
+2. Placez-le dans le dossier `plugins` de votre serveur
+3. Redémarrez le serveur
+4. Configurez via `plugins/FactionPlugin/config.yml`
+
+### 📋 Prérequis
+
+- **Minecraft** : 1.21+
+- **Serveur** : Paper, Spigot ou fork compatible
+- **Java** : 21 ou supérieur
+
+---
+
+## 🗺️ FactionWebMap — v1.0.0
+
+**FactionWebMap** synchronise les données de factions et l'exploration des joueurs vers un site web en temps réel.
 
 ### ✨ Fonctionnalités
 
 | Fonctionnalité | Description |
-|-----------------|-------------|
-| 📍 **Suivi des Chunks** | Tracker automatiquement les chunks visités par chaque joueur |
-| 🏰 **Snapshot des Factions** | Envoyer un snapshot complet des données de faction toutes les 60 secondes |
-| 📊 **Statistiques Joueurs** | Synchroniser les stats individuelles des joueurs |
-| 🌐 **Intégration Web** | Connexion transparente avec le site web FactionSite |
-| ⚙️ **Configuration Flexible** | Intervalle de push et taille des lots configurable |
-| 🐛 **Mode Debug** | Option de débogage pour faciliter le dépannage |
+|----------------|-------------|
+| 📍 **Suivi des Chunks** | Tracker automatiquement les chunks visités |
+| 🏰 **Snapshot des Factions** | Envoi toutes les 60 secondes |
+| 📊 **Statistiques Joueurs** | Kills, deaths, playtime |
+| 🌐 **Positions en Temps Réel** | Toutes les 2 secondes |
 
-### 🔧 Installation Rapide
+### 🔧 Installation
 
 ```bash
 # Compilation
@@ -49,7 +92,7 @@ mvn -f pom_webmap.xml clean package
 ```
 
 1. Placez `FactionWebMap-1.0.0.jar` dans le dossier `plugins` de votre serveur
-2. **SoftDepend** de `FactionPlugin` (optionnel mais recommandé)
+2. **SoftDepend** de `FactionPlugin` (optionnel mais recommandé pour la synchronisation complète)
 3. Redémarrez le serveur
 4. Modifiez `plugins/FactionWebMap/config.yml` avec l'URL de votre site et votre clé API
 
@@ -64,6 +107,18 @@ worlds-tracked:
   - world
 debug: false
 ```
+
+### 🔌 API Endpoints Utilisés
+
+Le plugin communique avec les endpoints suivants sur votre site :
+
+| Endpoint | Méthode | Description |
+|----------|---------|-------------|
+| `/api/faction/push/chunks` | POST | Envoyer les chunks explorés par joueur |
+| `/api/faction/push/snapshot` | POST | Envoyer le snapshot global des factions |
+| `/api/faction/push/stats` | POST | Envoyer les stats d'un joueur |
+| `/api/faction/push/positions` | POST | Envoyer les positions de tous les joueurs |
+| `/api/faction/push/position` | POST | Envoyer la position d'un joueur (déconnexion) |
 
 ---
 
@@ -265,6 +320,27 @@ fr.faction
 ```
 
 ## 📜 Historique des Versions
+
+### FactionWebMap v1.0.0 — Nouvelle Publication 🆕
+> **Premier lancement officiel** du plugin FactionWebMap pour la synchronisation web en temps réel !
+
+#### 🗺️ Fonctionnalités
+- **Suivi des chunks** : Tracker automatiquement les chunks visités par chaque joueur
+- **Snapshot des factions** : Envoyer un snapshot complet des données de faction (factions, claims, homes) toutes les 60 secondes
+- **Statistiques joueurs** : Synchroniser les stats individuelles (kills, deaths, playtime)
+- **Positions en temps réel** : Suivre et envoyer la position des joueurs en ligne toutes les 2 secondes
+- **Configuration flexible** : Intervalle de push et taille des lots configurables
+- **Mode debug** : Option de débogage pour faciliter le dépannage
+
+#### 🏗️ Architecture
+- Utilisation de la réflexion pour interagir avec FactionPlugin sans dépendance dure
+- Installation standalone possible (sans FactionPlugin)
+- Intégration transparente avec FactionPlugin quand présent
+
+#### 🔌 API
+- Endpoints pour chunks, snapshots, stats et positions
+- Authentification par clé API
+- Gestion des erreurs et timeouts
 
 ### v5.8.0 — Site Web FactionSite v2 & Améliorations Majeures ✨
 > **Version majeure** avec intégration complète du site web FactionSite v2 !
