@@ -69,7 +69,7 @@ debug: false
 
 ## 🎮 FactionPlugin — Plugin Principal
 
-✨ **Version 5.8.0** : Système complet de gestion de factions avec guerre, commerce et statistiques.
+✨ **Version 5.8.2** : Système complet de gestion de factions avec guerre, commerce et statistiques.
 
 ### ✨ Fonctionnalités Principales
 
@@ -97,7 +97,7 @@ debug: false
 #### FactionPlugin (plugin principal)
 ```bash
 mvn -f pom.xml clean package
-# JAR: target/FactionPlugin-5.8.0.jar
+# JAR: target/FactionPlugin-5.8.2.jar
 ```
 
 #### FactionWebMap (synchronisation web)
@@ -206,7 +206,7 @@ cd Facc
 mvn clean package
 ```
 
-Le fichier JAR sera généré dans `target/FactionPlugin-5.8.0.jar`
+Le fichier JAR sera généré dans `target/FactionPlugin-5.8.2.jar`
 
 ### Installation rapide
 1. Téléchargez la dernière version depuis la [page des releases](../../releases)
@@ -265,6 +265,28 @@ fr.faction
 ```
 
 ## 📜 Historique des Versions
+
+### v5.8.2 — Fusion FactionPlugin + FactionStats & Améliorations ✨
+> **Version de fusion** avec intégration complète des statistiques avancées !
+
+#### 🔗 Fusion avec FactionStats
+- **Commande enrichie `/faction stats [joueur]`** : Ajout des mobs hostiles tués, dégâts reçus, dates de première/dernière connexion, classements affichés en ligne
+- **Fonctionne pour les joueurs hors ligne** : Plus besoin d'être connecté pour consulter les stats
+- **`/faction classementjoueurs <categorie>`** : Top 10 joueurs par catégorie (`mobs`, `pvp`, `advancements`, `morts`, `blocs`, `temps`, `dommages`, `kd`)
+
+#### ⚡ Système de Puissance Amélioré
+- **Tracking mobs hostiles** : Ajout du compteur `mobsKilled`
+- **Dégâts reçus trackés** : Y compris hors combat direct (chute, feu, noyade...)
+- **Temps de jeu précis** : Tâche périodique (+20 ticks/seconde) — plus robuste en cas de crash serveur
+
+#### 🛠️ Améliorations Techniques
+- Nouveau fichier `StatsMessageUtil` : formatage des nombres, séparateurs, médailles de classement
+- Fichier `stats.yml` rétrocompatible : Les anciens fichiers se rechargent sans erreur
+
+#### 🐛 Corrections
+- Corrections de bugs TPA/Home
+- Résolution de problèmes de visualisation claims
+- Amélioration des performances GUI
 
 ### v5.8.0 — Site Web FactionSite v2 & Améliorations Majeures ✨
 > **Version majeure** avec intégration complète du site web FactionSite v2 !
