@@ -403,7 +403,7 @@ public class FactionGUI implements Listener {
         ItemStack item = makeItem(mat, name, lore);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
-            meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+            meta.addEnchant(Enchantment.SOUL_SPEED, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             item.setItemMeta(meta);
         }

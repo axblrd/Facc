@@ -1,4 +1,5 @@
 package fr.faction;
+import org.bukkit.Bukkit;
 
 import fr.faction.alliance.AllianceManager;
 import fr.faction.alliance.HomeManager;
@@ -26,7 +27,6 @@ import fr.faction.shop.ShopGUI;
 import fr.faction.shop.ShopManager;
 import fr.faction.trade.TradeGUI;
 import fr.faction.trade.TradeManager;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class FactionPlugin extends JavaPlugin {
@@ -71,6 +71,7 @@ public class FactionPlugin extends JavaPlugin {
     // v5.2 — tri de coffre
     private fr.faction.sort.SortMenuGUI sortMenuGUI;
     private fr.faction.web.WebLinkManager webLinkManager;
+    private fr.faction.web.WebMapSync webMapSync;
 
     @Override
     public void onEnable() {
@@ -132,6 +133,10 @@ public class FactionPlugin extends JavaPlugin {
         webLinkManager = new fr.faction.web.WebLinkManager(this);
         String siteUrl = getConfig().getString("site-url", "http://localhost:3000");
         getCommand("lier").setExecutor(new fr.faction.web.LierCommand(webLinkManager, siteUrl));
+
+        // ── WebMap sync (remplace le plugin FactionWebMap séparé) ────────────────
+        webMapSync = new fr.faction.web.WebMapSync(this, factionManager, powerManager);
+        getServer().getPluginManager().registerEvents(webMapSync, this);
 
         FactionCommand cmd = new FactionCommand(
                 this, factionManager, statsManager, sharedInventoryManager, teleportManager,

@@ -97,7 +97,7 @@ debug: false
 #### FactionPlugin (plugin principal)
 ```bash
 mvn -f pom.xml clean package
-# JAR: target/FactionPlugin-5.8.0.jar
+# JAR: target/FactionPlugin-5.8.1.jar
 ```
 
 #### FactionWebMap (synchronisation web)
@@ -206,7 +206,7 @@ cd Facc
 mvn clean package
 ```
 
-Le fichier JAR sera généré dans `target/FactionPlugin-5.8.0.jar`
+Le fichier JAR sera généré dans `target/FactionPlugin-5.8.1.jar`
 
 ### Installation rapide
 1. Téléchargez la dernière version depuis la [page des releases](../../releases)
